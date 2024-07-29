@@ -10,7 +10,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 //图标 图标在附件中
 import '@/assets/icon/iconfont.css'
-import '@/assets/base.scss'
+import '@/assets/scss/base.scss'
 
 //引入代码高亮
 import HljsVuePlugin from '@highlightjs/vue-plugin'

@@ -246,7 +246,7 @@ const download = async (row) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/file.list.scss";
+@import "@/assets/scss/file.list.scss";
 
 .search-panel {
   margin-left: 0px !important;
