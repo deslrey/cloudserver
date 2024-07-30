@@ -238,6 +238,12 @@ const menus = [
     ],
   },
   {
+    path: "/relation",
+    icon: "share1",
+    name: "关系",
+    menuCode: "relation",
+  },
+  {
     path: "/settings/fileList",
     icon: "settings",
     name: "设置",
