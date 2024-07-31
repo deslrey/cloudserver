@@ -1,11 +1,12 @@
 import request from '@/utils/requ.js'
 
+
 export default {
 
-    getTest() {
+    getTest(data) {
         return request({
             url: '/userInfo/str',
-            method: 'get',
+            params: data
         })
     }
 
