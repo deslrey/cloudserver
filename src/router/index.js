@@ -72,8 +72,7 @@ const router = createRouter({
           component: () => import("@/views/admin/FileList.vue")
         },
       ]
-    },
-
+    }
   ]
 })
 

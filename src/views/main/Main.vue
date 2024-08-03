@@ -102,14 +102,11 @@
     <Preview ref="previewRef"> </Preview>
     <!--移动-->
     <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
-
   </div>
 </template>
 
 <script setup>
-
 import CategoryInfo from "@/js/CategoryInfo.js";
-import { pa } from "element-plus/es/locales.mjs";
 import { ref, reactive, getCurrentInstance, nextTick, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
@@ -125,7 +122,7 @@ const reload = () => {
   showLoading.value = false;
   loadDataList();
 };
- ({
+defineExpose({
   reload,
 });
 const api = {
@@ -430,7 +427,11 @@ const download = async (row) => {
   window.location.href = api.download + "/" + result.data;
 };
 
-
+//分享
+const shareRef = ref();
+const share = (row) => {
+  shareRef.value.show(row);
+};
 </script>
 
 <style lang="scss" scoped>

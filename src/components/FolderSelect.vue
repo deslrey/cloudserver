@@ -109,9 +109,6 @@ const folderSelect = () => {
 }
 
 .folder-list {
-  max-height: calc(100vh - 200px);
-  min-height: 200px;
-
   .folder-item {
     cursor: pointer;
     display: flex;
@@ -127,6 +124,9 @@ const folderSelect = () => {
       background: #f8f8f8;
     }
   }
+
+  max-height: calc(100vh - 200px);
+  min-height: 200px;
 }
 
 .tips {

@@ -216,7 +216,7 @@ const delBatch = (row) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/file.list.scss";
+@import "@/assets/file.list.scss";
 .file-list {
   margin-top: 10px;
   .file-item {

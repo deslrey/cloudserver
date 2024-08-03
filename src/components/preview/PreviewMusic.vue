@@ -2,7 +2,7 @@
   <div class="music">
     <div class="body-content">
       <div class="cover">
-        <img src="@/assets/img/music_cover.png" />
+        <img src="@/assets/music_cover.png" />
       </div>
       <div ref="playerRef" class="music-player"></div>
     </div>
@@ -43,7 +43,7 @@ onMounted(() => {
     audio: {
       url: `/api${props.url}`,
       name: `${props.fileName}`,
-      cover: new URL(`@/assets/img/music_icon.png`, import.meta.url).href,
+      cover: new URL(`@/assets/music_icon.png`, import.meta.url).href,
       artist: "",
     },
   });

@@ -74,6 +74,12 @@ const FILE_URL_MAP = {
     createDownloadUrl: "/admin/createDownloadUrl",
     downloadUrl: "/api/admin/download",
   },
+  2: {
+    fileUrl: "/showShare/getFile",
+    videoUrl: "/showShare/ts/getVideoInfo",
+    createDownloadUrl: "/showShare/createDownloadUrl",
+    downloadUrl: "/api/showShare/download",
+  },
 };
 const url = ref(null);
 const createDownloadUrl = ref(null);
@@ -104,6 +110,10 @@ const showPreview = (data, showPart) => {
       _url = _url + "/" + data.userId + "/" + data.fileId;
       _createDownloadUrl =
         _createDownloadUrl + "/" + data.userId + "/" + data.fileId;
+    } else if (showPart == 2) {
+      _url = _url + "/" + data.shareId + "/" + data.fileId;
+      _createDownloadUrl =
+        _createDownloadUrl + "/" + data.shareId + "/" + data.fileId;
     }
     url.value = _url;
     createDownloadUrl.value = _createDownloadUrl;

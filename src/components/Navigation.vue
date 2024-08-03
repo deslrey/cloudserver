@@ -30,6 +30,9 @@ const props = defineProps({
     type: Boolean, //是否监听路径变化
     default: true,
   },
+  shareId: {
+    type: String,
+  },
   adminShow: {
     type: Boolean,
     default: false,
@@ -58,6 +61,7 @@ defineExpose({ openFolder, init });
 
 const api = {
   getFolderInfo: "/file/getFolderInfo",
+  getFolderInfo4Share: "/showShare/getFolderInfo",
   getFolderInfo4Admin: "/admin/getFolderInfo",
 };
 
@@ -117,6 +121,9 @@ const setPath = () => {
 //获取当前路径的目录
 const getNavigationFolder = async (path) => {
   let url = api.getFolderInfo;
+  if (props.shareId) {
+    url = api.getFolderInfo4Share;
+  }
   if (props.adminShow) {
     url = api.getFolderInfo4Admin;
   }
@@ -152,7 +159,8 @@ watch(
     //路由切换到其他路由  首页和管理员查看文件列表页面需要监听
     if (
       newVal.path.indexOf("/main") === -1 &&
-      newVal.path.indexOf("/settings/fileList") === -1
+      newVal.path.indexOf("/settings/fileList") === -1 &&
+      newVal.path.indexOf("/share") === -1
     ) {
       return;
     }

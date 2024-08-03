@@ -3,10 +3,10 @@
     <div class="bg"></div>
     <div class="login-panel">
       <el-form class="login-register" :model="formData" :rules="rules" ref="formDataRef">
-        <div class="login-title">Deslre</div>
+        <div class="login-title">Small云盘</div>
         <!--input输入-->
         <el-form-item prop="email">
-          <el-input size="large" clearable placeholder="请输入账户" v-model="formData.email" maxLength="150">
+          <el-input size="large" clearable placeholder="请输入邮箱" v-model="formData.email" maxLength="150">
             <template #prefix>
               <span class="iconfont icon-account"></span>
             </template>
@@ -101,6 +101,9 @@
             <span v-if="opType == 2">重置密码</span>
           </el-button>
         </el-form-item>
+        <!--        <div class="login-btn-qq" v-if="opType == 1">-->
+        <!--          快捷登录 <img src="@/assets/qq.png" @click="qqLogin"/>-->
+        <!--        </div>-->
       </el-form>
     </div>
     <!--发送邮箱验证码-->
@@ -140,6 +143,7 @@ const api = {
   register: "/userInfo/register",
   login: "/userInfo/login",
   resetPwd: "/userInfo/resetPwd",
+  qqLogin: "/userInfo/qqLogin",
 };
 
 // 0:注册 1:登录 2:重置密码
@@ -362,13 +366,28 @@ const doSubmit = () => {
 const closeDialog = () => {
   dialogConfig.show = false;
 };
+
+//QQ登录
+// const qqLogin = async () => {
+//   let result = await proxy.Request({
+//     url: api.qqLogin,
+//     params: {
+//       callbackUrl: route.query.redirectUrl || "",
+//     },
+//   });
+//   if (!result) {
+//     return;
+//   }
+//   proxy.VueCookies.remove("userInfo");
+//   document.location.href = result.data;
+// };
 </script>
 
 <style lang="scss" scoped>
 .login-body {
   height: calc(100vh);
   background-size: cover;
-  background: url("../assets/img/login_bg.jpg");
+  background: url("../assets/login_bg.jpg");
   display: flex;
 
   .bg {
@@ -377,7 +396,7 @@ const closeDialog = () => {
     background-position: center;
     background-size: 800px;
     background-repeat: no-repeat;
-    background-image: url("../assets/img/login_img.png");
+    background-image: url("../assets/login_img.png");
   }
 
   .login-panel {

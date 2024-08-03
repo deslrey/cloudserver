@@ -60,9 +60,9 @@ instance.interceptors.response.use(
         } else {
             //其他错误
             if (errorCallback) {
-                errorCallback(responseData.message);
+                errorCallback(responseData.msg);
             }
-            return Promise.reject({ showError: showError, msg: responseData.message });
+            return Promise.reject({ showError: showError, msg: responseData.msg });
         }
     },
     (error) => {
