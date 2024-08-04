@@ -63,7 +63,7 @@
           <div class="tips" v-if="currentMenu && currentMenu.tips">
             {{ currentMenu.tips }}
           </div>
-          <div class="space-info">
+          <div class="space-info" v-if="showSpaceInfo">
             <div>空间使用</div>
             <div class="percent">
               <el-progress :percentage="Math.floor(
@@ -282,6 +282,10 @@ const getUseSpace = async () => {
 };
 getUseSpace();
 
+// 计算属性：根据当前路径判断是否显示空间使用信息
+const showSpaceInfo = computed(() => {
+  return !route.path.includes('relationship');
+});
 //修改头像
 const updateAvatarRef = ref();
 const updateAvatar = () => {
