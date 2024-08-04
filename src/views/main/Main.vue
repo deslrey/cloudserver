@@ -426,12 +426,6 @@ const download = async (row) => {
   }
   window.location.href = api.download + "/" + result.data;
 };
-
-//分享
-const shareRef = ref();
-const share = (row) => {
-  shareRef.value.show(row);
-};
 </script>
 
 <style lang="scss" scoped>

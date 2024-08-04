@@ -87,6 +87,7 @@ const request = (config) => {
         'Content-Type': contentType,
         'X-Requested-With': 'XMLHttpRequest',
     }
+    console.log('formData ------> ', formData);
 
     return instance.post(url, formData, {
         onUploadProgress: (event) => {
