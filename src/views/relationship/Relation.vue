@@ -1,9 +1,11 @@
 <template>
     <div class="container">
-        <div class="select-container">
-            <el-select v-model="value" filterable placeholder="Select" class="select-box">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <div class="form-container">
+            <el-select v-model="value" filterable placeholder="选择班级" class="select-box" allow-create clearable>
+                <el-option v-for="item in options" :key="item.name" :label="item.name" :value="item.name" />
             </el-select>
+            <el-input v-model="name" placeholder="请输入姓名" class="input-box" />
+            <el-button type="primary" @click="handleSubmit">提交</el-button>
         </div>
         <div class="chart-container">
             <div id="main" ref="main" class="main"></div>
@@ -12,18 +14,48 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, getCurrentInstance, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
 
+const api = {
+    getOptions: '/groups/getOptions'
+}
+
+const { proxy } = getCurrentInstance();
 const main = ref(null)
+const value = ref('')
+const name = ref('')
+const options = ref([])
+
+const getOptions = async () => {
+    const result = await proxy.Request({
+        url: api.getOptions,
+        showLoading: true,
+        params: { count: 100 }
+    })
+    if (!result) {
+        return
+    }
+    options.value = result.data
+
+}
+getOptions()
+
+const handleSubmit = () => {
+    if (!value.value) {
+        proxy.Message.warning('请选择一个选项')
+        return
+    }
+    console.log('选择器的值:', value.value)
+    console.log('输入的姓名:', name.value)
+}
+
 const categories = [
     { name: '级别1' },
     { name: '级别2' },
     { name: '级别3' },
     { name: '级别4' }
 ]
-let currentNode = null
-
 const graphData = ref([
     { name: 'node01', des: 'nodedes01', symbolSize: 70, category: 0, itemStyle: { color: '#0000ff' } },
     { name: 'node02', des: 'nodedes02', symbolSize: 50, category: 1 },
@@ -32,7 +64,6 @@ const graphData = ref([
     { name: 'node05', des: 'nodedes05', symbolSize: 50, category: 3 },
     { name: 'node06', des: 'nodedes04', symbolSize: 50, category: 2 },
 ])
-
 const linksData = ref([
     { source: 'node01', target: 'node02', name: 'link01', des: 'link01des' },
     { source: 'node01', target: 'node03', name: 'link02', des: 'link02des' },
@@ -40,18 +71,6 @@ const linksData = ref([
     { source: 'node01', target: 'node05', name: 'link04', des: 'link05des' },
     { source: 'node01', target: 'node06', name: 'link06', des: 'link05des', symbol: ['circle', 'arrow'], lineStyle: { color: '#66FFCC' } }
 ])
-
-const value = ref('')
-const options = [
-    {
-        value: 'Option1',
-        label: 'Option1',
-    },
-    {
-        value: 'Option2',
-        label: 'Option2',
-    }
-]
 
 let myChart = null;
 
@@ -149,15 +168,25 @@ function resizeChart() {
 .container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    /* Space between select box and chart */
-    padding: 10px;
+    gap: 20px;
+    /* Space between form and chart */
+    padding: 20px;
     /* Space around the container */
     height: 100vh;
     box-sizing: border-box;
 }
 
-.select-container {
+.form-container {
+    display: flex;
+    flex-direction: row;
+    /* Horizontal layout */
+    gap: 10px;
+    /* Space between select box, input, and button */
+    align-items: center;
+}
+
+.select-box,
+.input-box {
     width: 240px;
 }
 
