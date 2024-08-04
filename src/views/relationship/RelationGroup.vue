@@ -23,16 +23,43 @@
             layout="total, sizes, prev, pager, next, jumper" :total="tableData.totalCount"
             @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
+
+    <el-dialog v-model="dialogVisible" title="编辑" width="500" destroy-on-close align-center close-on-press-escape>
+        <el-form :model="editForm">
+            <el-form-item label="Name">
+                <el-input v-model="editForm.name" />
+            </el-form-item>
+            <el-form-item label="Description">
+                <el-input v-model="editForm.description" />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="submitEdit">
+                    Confirm
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup>
 import { ref, defineEmits, getCurrentInstance, computed, reactive } from 'vue'
+import Message from '../../utils/Message';
+
 const emits = defineEmits(['addFile', 'reload'])
 
 const { proxy } = getCurrentInstance();
 const search = ref('')
 const background = ref(false)
 const disabled = ref(false)
+const dialogVisible = ref(false)
+const editForm = reactive({
+    id: null,
+    name: '',
+    description: ''
+})
 
 let tableData = reactive({
     totalCount: 0,
@@ -42,7 +69,9 @@ let tableData = reactive({
 })
 
 const api = {
-    getAllGroups: "/groups/getAllGroups",
+    getAllGroups: '/groups/getAllGroups',
+    deleteGroup: '/groups/deleteGroup',
+    updateGroup: '/groups/updateGroup'
 }
 
 const tableDataList = async () => {
@@ -50,15 +79,18 @@ const tableDataList = async () => {
         pageNo: tableData.currentPage,
         pageSize: tableData.pageSize,
     }
-
+    console.log('tableData ------> ', tableData)
+    console.log('params ------> ', params)
     const result = await proxy.Request({
         url: api.getAllGroups,
         showLoading: true,
         params: params
     })
-
-    const { list, totalCount, currentPage, pageSize } = result.data
-    Object.assign(tableData, { list, totalCount, currentPage, pageSize })
+    console.log('result ------> ', result)
+    tableData.totalCount = result.data.totalCount
+    tableData.currentPage = result.data.pageNo
+    tableData.pageSize = result.data.pageSize
+    tableData.list = result.data.list
     console.log(tableData)
 }
 
@@ -74,11 +106,33 @@ const filterTableData = computed(() =>
 )
 
 const handleEdit = (row) => {
-    console.log(row)
+    console.log('row ------> ', row);
+    editForm.id = row.id
+    editForm.name = row.name
+    editForm.description = row.description
+    editForm.exist = row.exist
+    dialogVisible.value = true
+    console.log('editForm ------> ', editForm);
 }
 
 const handleDelete = (row) => {
-    console.log(row)
+    console.log('handleDelete ------> ', row.id)
+    proxy.Confirm(
+        `你确定要删除【${row.name}】这组关系数据吗?`,
+        async () => {
+            let result = await proxy.Request({
+                url: api.deleteGroup,
+                params: {
+                    groupsId: row.id
+                }
+            })
+            if (!result) {
+                return
+            }
+            tableDataList()
+        }
+    )
+
 }
 
 const handleSizeChange = (val) => {
@@ -91,6 +145,28 @@ const handleCurrentChange = (val) => {
     tableData.currentPage = val
     tableDataList()
     console.log(`current page: ${val}`)
+}
+
+const submitEdit = async () => {
+    console.log('editForm ------> ', editForm);
+
+    let result = await proxy.Request({
+        url: api.updateGroup,
+        method: 'post',
+        params: {
+            id: editForm.id,
+            name: editForm.name,
+            description: editForm.description
+        }
+    })
+    if (result) {
+        dialogVisible.value = false
+        Message.success(result.message)
+        tableDataList()
+    } else {
+        Message.error(result.message)
+        tableDataList()
+    }
 }
 </script>
 

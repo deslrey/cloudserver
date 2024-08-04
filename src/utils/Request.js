@@ -103,7 +103,7 @@ const request = (config) => {
     }).catch(error => {
         console.log(error);
         if (error.showError) {
-            Message.error(error.msg);
+            Message.error(error.message);
         }
         return null;
     });
