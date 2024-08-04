@@ -36,13 +36,22 @@ const router = createRouter({
           component: () => import("@/views/recycle/Recycle.vue")
         },
         {
-          path: '/relation',
+          path: '/relationship/relation',
           name: '关系',
           meta: {
             needLogin: true,
-            menuCode: "relation"
+            menuCode: "relationship"
           },
-          component: () => import("@/views/relation/Relation.vue")
+          component: () => import("@/views/relationship/Relation.vue")
+        },
+        {
+          path: '/relationship/groups',
+          name: '组数据',
+          meta: {
+            needLogin: true,
+            menuCode: "relationship"
+          },
+          component: () => import("@/views/relationship/RelationGroup.vue")
         },
         {
           path: '/settings/sysSetting',

@@ -3,7 +3,7 @@
     <div class="header">
       <div class="logo">
         <span class="iconfont icon-pan"></span>
-        <span class="name">Small云盘</span>
+        <span class="name">Deslre</span>
       </div>
       <div class="right-panel">
         <el-popover :width="800" trigger="click" v-model:visible="showUploader" :offset="20" transition="none"
@@ -201,12 +201,21 @@ const menus = [
     ],
   },
   {
-    path: "/relation",
+    path: "/relationship/groups",
     icon: "share1",
-    name: "回收站",
-    menuCode: "relation",
-    tips: "查询对应班级的关系",
+    name: "关系",
+    menuCode: "relationship",
     allShow: true,
+    children: [
+      {
+        name: '组数据管理',
+        path: '/relationship/groups',
+      },
+      {
+        name: '关系展示',
+        path: "/relationship/relation",
+      }
+    ]
   },
   {
     path: "/settings/fileList",
