@@ -1,17 +1,21 @@
 <template>
-    <div>
-        <div id="main" ref="main" class="main"></div>
+    <div class="container">
+        <div class="select-container">
+            <el-select v-model="value" filterable placeholder="Select" class="select-box">
+                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+        </div>
+        <div class="chart-container">
+            <div id="main" ref="main" class="main"></div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
-import { pa } from 'element-plus/es/locales.mjs';
 
 const main = ref(null)
-const showForm = ref(false)
-const formData = ref({ name: '', des: '', symbolSize: 40, category: 0 })
 const categories = [
     { name: '级别1' },
     { name: '级别2' },
@@ -37,8 +41,22 @@ const linksData = ref([
     { source: 'node01', target: 'node06', name: 'link06', des: 'link05des', symbol: ['circle', 'arrow'], lineStyle: { color: '#66FFCC' } }
 ])
 
+const value = ref('')
+const options = [
+    {
+        value: 'Option1',
+        label: 'Option1',
+    },
+    {
+        value: 'Option2',
+        label: 'Option2',
+    }
+]
+
+let myChart = null;
+
 onMounted(() => {
-    const myChart = echarts.init(main.value)
+    myChart = echarts.init(main.value)
     const option = {
         title: {
             text: 'ECharts 关系图'
@@ -106,47 +124,55 @@ onMounted(() => {
     }
     myChart.setOption(option)
 
+    // 监听窗口大小变化
+    window.addEventListener('resize', resizeChart)
+
     // 点击事件
     myChart.on('click', function (params) {
         alert(params.name)
     })
 })
+
+// 在组件销毁前移除事件监听
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', resizeChart)
+})
+
+function resizeChart() {
+    if (myChart) {
+        myChart.resize()
+    }
+}
 </script>
 
 <style scoped>
-.main {
-    width: 100vw;
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* Space between select box and chart */
+    padding: 10px;
+    /* Space around the container */
     height: 100vh;
+    box-sizing: border-box;
+}
+
+.select-container {
+    width: 240px;
+}
+
+.chart-container {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    /* Ensure it takes the full height of the container */
+}
+
+.main {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
     background-color: skyblue;
-}
-
-.form-container {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    padding: 20px;
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-form div {
-    margin-bottom: 10px;
-}
-
-label {
-    margin-right: 10px;
-}
-
-button {
-    margin-top: 10px;
 }
 </style>
