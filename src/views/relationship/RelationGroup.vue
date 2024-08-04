@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="filterTableData" stripe>
+    <el-table :data="filterTableData" stripe size="large">
         <el-table-column label="Name" prop="name" />
         <el-table-column label="Description" prop="description" />
         <el-table-column align="right">
@@ -159,12 +159,10 @@ const submitEdit = async () => {
             description: editForm.description
         }
     })
+    console.log('result ------> ', result);
     if (result) {
         dialogVisible.value = false
         Message.success(result.message)
-        tableDataList()
-    } else {
-        Message.error(result.message)
         tableDataList()
     }
 }

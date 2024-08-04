@@ -4,6 +4,7 @@ import { ElLoading } from 'element-plus'
 import router from '@/router'
 
 import Message from '../utils/Message'
+import message from '../utils/Message'
 
 const contentTypeForm = 'application/x-www-form-urlencoded;charset=UTF-8'
 const contentTypeJson = 'application/json'
@@ -56,13 +57,13 @@ instance.interceptors.response.use(
         } else if (responseData.code == 901) {
             //登录超时
             router.push("/login?redirectUrl=" + encodeURI(router.currentRoute.value.path));
-            return Promise.reject({ showError: false, msg: "登录超时" });
+            return Promise.reject({ showError: false, message: "登录超时" });
         } else {
             //其他错误
             if (errorCallback) {
-                errorCallback(responseData.msg);
+                errorCallback(responseData.message);
             }
-            return Promise.reject({ showError: showError, msg: responseData.msg });
+            return Promise.reject({ showError: showError, message: responseData.message });
         }
     },
     (error) => {
@@ -101,7 +102,7 @@ const request = (config) => {
         errorCallback: config.errorCallback,
         showError: config.showError
     }).catch(error => {
-        console.log(error);
+        console.log('error ------>', error);
         if (error.showError) {
             Message.error(error.message);
         }
