@@ -8,13 +8,16 @@
             <el-button type="primary" @click="handleSubmit">提交</el-button>
         </div>
         <div class="chart-container">
-            <div id="main" ref="main" class="main"></div>
+            <div v-if="noData" class="no-data-container">
+                <img src="../../assets/img/download.webp" alt="暂无数据" class="no-data-image">
+            </div>
+            <div v-else id="main" ref="main" class="main"></div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, getCurrentInstance, onMounted, onBeforeUnmount } from 'vue'
+import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import * as echarts from 'echarts'
 
 const api = {
@@ -24,11 +27,12 @@ const api = {
 
 const { proxy } = getCurrentInstance();
 const main = ref(null)
-const value = ref()
+const value = ref(null)
 const name = ref('')
 const options = ref([])
 const graphData = ref([])
 const linksData = ref([])
+const noData = ref(true)
 
 const getOptions = async () => {
     const result = await proxy.Request({
@@ -44,7 +48,7 @@ const getOptions = async () => {
 getOptions()
 
 const handleSubmit = () => {
-    if (!value.value.name) {
+    if (!value.value) {
         proxy.Message.warning('请选择一个选项')
         return
     }
@@ -61,10 +65,10 @@ const getGroupRela = async (groupId) => {
     })
 
     if (!result || !result.data) {
+        noData.value = true
         return
     }
 
-    // 处理后端返回的数据
     const nodes = []
     const links = []
     const nodeMap = new Map()
@@ -107,7 +111,14 @@ const getGroupRela = async (groupId) => {
     graphData.value = nodes
     linksData.value = links
 
-    updateChart()
+    noData.value = nodes.length === 0 && links.length === 0
+
+    nextTick(() => {
+        if (!myChart) {
+            myChart = echarts.init(main.value)
+        }
+        updateChart()
+    })
 }
 
 const categories = [
@@ -122,7 +133,7 @@ const handleChartClick = (params) => {
 }
 
 const updateChart = () => {
-    if (!myChart) return
+    if (!myChart || noData.value) return
 
     const option = {
         title: {
@@ -151,7 +162,7 @@ const updateChart = () => {
             focusNodeAdjacency: true,
             legendHoverLink: false,
             roam: true,
-            edgeSymbolSize: [2, 10],
+            edgeSymbolSize: [100, 150],
             edgeLabel: {
                 normal: {
                     textStyle: {
@@ -193,17 +204,15 @@ const updateChart = () => {
 }
 
 onMounted(() => {
-    myChart = echarts.init(main.value)
-    updateChart()
+    nextTick(() => {
+        myChart = echarts.init(main.value)
+        updateChart()
 
-    // 监听窗口大小变化
-    window.addEventListener('resize', resizeChart)
-
-    // 注册点击事件
-    myChart.on('click', handleChartClick)
+        window.addEventListener('resize', resizeChart)
+        myChart.on('click', handleChartClick)
+    });
 })
 
-// 在组件销毁前移除事件监听
 onBeforeUnmount(() => {
     window.removeEventListener('resize', resizeChart)
     if (myChart) {
@@ -218,16 +227,12 @@ function resizeChart() {
 }
 </script>
 
-
-
 <style scoped>
 .container {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    /* Space between form and chart */
     padding: 20px;
-    /* Space around the container */
     height: 100vh;
     box-sizing: border-box;
 }
@@ -235,9 +240,7 @@ function resizeChart() {
 .form-container {
     display: flex;
     flex-direction: row;
-    /* Horizontal layout */
     gap: 10px;
-    /* Space between select box, input, and button */
     align-items: center;
 }
 
@@ -250,7 +253,6 @@ function resizeChart() {
     flex: 1;
     width: 100%;
     height: 100%;
-    /* Ensure it takes the full height of the container */
 }
 
 .main {
@@ -258,6 +260,20 @@ function resizeChart() {
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    background-color: skyblue;
+    background-color: #f9f9f9;
+    /* 修改背景颜色 */
+}
+
+.no-data-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #f0f0f0;
+}
+
+.no-data-image {
+    max-width: 100%;
+    max-height: 100%;
 }
 </style>
