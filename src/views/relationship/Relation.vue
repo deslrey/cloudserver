@@ -2,7 +2,7 @@
     <div class="container">
         <div class="form-container">
             <el-select v-model="value" filterable placeholder="选择班级" class="select-box" allow-create clearable>
-                <el-option v-for="item in options" :key="item.name" :label="item.name" :value="item.name" />
+                <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item" />
             </el-select>
             <el-input v-model="name" placeholder="请输入姓名" class="input-box" />
             <el-button type="primary" @click="handleSubmit">提交</el-button>
@@ -18,14 +18,17 @@ import { ref, getCurrentInstance, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
 
 const api = {
-    getOptions: '/groups/getOptions'
+    getOptions: '/groups/getOptions',
+    getGroupRela: '/relationships/getGroupRela'
 }
 
 const { proxy } = getCurrentInstance();
 const main = ref(null)
-const value = ref('')
+const value = ref()
 const name = ref('')
 const options = ref([])
+const graphData = ref([])
+const linksData = ref([])
 
 const getOptions = async () => {
     const result = await proxy.Request({
@@ -37,48 +40,93 @@ const getOptions = async () => {
         return
     }
     options.value = result.data
-
 }
 getOptions()
 
 const handleSubmit = () => {
-    if (!value.value) {
+    if (!value.value.name) {
         proxy.Message.warning('请选择一个选项')
         return
     }
-    console.log('选择器的值:', value.value)
+    console.log('选择器的值:', value.value.id)
     console.log('输入的姓名:', name.value)
+    getGroupRela(value.value.id)
+}
+
+const getGroupRela = async (groupId) => {
+    const result = await proxy.Request({
+        url: api.getGroupRela,
+        showLoading: true,
+        params: { groupId: groupId }
+    })
+
+    if (!result || !result.data) {
+        return
+    }
+
+    // 处理后端返回的数据
+    const nodes = []
+    const links = []
+    const nodeMap = new Map()
+
+    result.data.forEach(item => {
+        const startNodeId = `${item.startId}-${item.startType}`
+        const endNodeId = `${item.endId}-${item.endType}`
+
+        if (!nodeMap.has(startNodeId)) {
+            nodeMap.set(startNodeId, {
+                id: startNodeId,
+                name: item.startName,
+                des: item.startType === 'person' ? `${item.startName}(${item.startType})` : `${item.startName}(${item.endType})`,
+                symbolSize: 50,
+                category: item.startType === 'person' ? 0 : 1
+            })
+        }
+        if (!nodeMap.has(endNodeId)) {
+            nodeMap.set(endNodeId, {
+                id: endNodeId,
+                name: item.endName,
+                des: item.endType === 'person' ? `${item.endName}(${item.endType})` : `${item.endName}(${item.endType})`,
+                symbolSize: 50,
+                category: item.endType === 'person' ? 0 : 1
+            })
+        }
+        links.push({
+            source: startNodeId,
+            target: endNodeId,
+            name: item.information,
+            des: item.information,
+            lineStyle: { color: '#4b565b' }
+        })
+    })
+
+    nodeMap.forEach(node => {
+        nodes.push(node)
+    })
+
+    graphData.value = nodes
+    linksData.value = links
+
+    updateChart()
 }
 
 const categories = [
-    { name: '级别1' },
-    { name: '级别2' },
-    { name: '级别3' },
-    { name: '级别4' }
+    { name: '人' },
+    { name: '物' }
 ]
-const graphData = ref([
-    { name: 'node01', des: 'nodedes01', symbolSize: 70, category: 0, itemStyle: { color: '#0000ff' } },
-    { name: 'node02', des: 'nodedes02', symbolSize: 50, category: 1 },
-    { name: 'node03', des: 'nodedes3', symbolSize: 50, category: 1 },
-    { name: 'node04', des: 'nodedes04', symbolSize: 50, category: 1, itemStyle: { color: '#2EA7C2FF' } },
-    { name: 'node05', des: 'nodedes05', symbolSize: 50, category: 3 },
-    { name: 'node06', des: 'nodedes04', symbolSize: 50, category: 2 },
-])
-const linksData = ref([
-    { source: 'node01', target: 'node02', name: 'link01', des: 'link01des' },
-    { source: 'node01', target: 'node03', name: 'link02', des: 'link02des' },
-    { source: 'node01', target: 'node04', name: 'link03', des: 'link03des' },
-    { source: 'node01', target: 'node05', name: 'link04', des: 'link05des' },
-    { source: 'node01', target: 'node06', name: 'link06', des: 'link05des', symbol: ['circle', 'arrow'], lineStyle: { color: '#66FFCC' } }
-])
 
-let myChart = null;
+let myChart = null
 
-onMounted(() => {
-    myChart = echarts.init(main.value)
+const handleChartClick = (params) => {
+    alert(params.name)
+}
+
+const updateChart = () => {
+    if (!myChart) return
+
     const option = {
         title: {
-            text: 'ECharts 关系图'
+            text: `关系图`
         },
         tooltip: {
             formatter: function (x) {
@@ -142,19 +190,25 @@ onMounted(() => {
         }]
     }
     myChart.setOption(option)
+}
+
+onMounted(() => {
+    myChart = echarts.init(main.value)
+    updateChart()
 
     // 监听窗口大小变化
     window.addEventListener('resize', resizeChart)
 
-    // 点击事件
-    myChart.on('click', function (params) {
-        alert(params.name)
-    })
+    // 注册点击事件
+    myChart.on('click', handleChartClick)
 })
 
 // 在组件销毁前移除事件监听
 onBeforeUnmount(() => {
     window.removeEventListener('resize', resizeChart)
+    if (myChart) {
+        myChart.off('click', handleChartClick)
+    }
 })
 
 function resizeChart() {
@@ -163,6 +217,8 @@ function resizeChart() {
     }
 }
 </script>
+
+
 
 <style scoped>
 .container {
