@@ -100,7 +100,8 @@ const getGroupRela = async (groupId) => {
             target: endNodeId,
             name: item.information,
             des: item.information,
-            lineStyle: { color: '#4b565b' }
+            lineStyle: { color: '#4b565b' },
+            symbol: item.information.includes('好友') ? ['none', 'arrow'] : ['none', 'none']
         })
     })
 
@@ -162,7 +163,7 @@ const updateChart = () => {
             focusNodeAdjacency: true,
             legendHoverLink: false,
             roam: true,
-            edgeSymbolSize: [100, 150],
+            edgeSymbolSize: [2, 10],
             edgeLabel: {
                 normal: {
                     textStyle: {
