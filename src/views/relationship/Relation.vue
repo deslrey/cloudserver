@@ -129,16 +129,12 @@ const categories = [
 
 let myChart = null
 
-const handleChartClick = (params) => {
-    alert(params.name)
-}
-
 const updateChart = () => {
     if (!myChart || noData.value) return
 
     const option = {
         title: {
-            text: `关系图`
+            text: `${value.value.name} - 关系图`
         },
         tooltip: {
             formatter: function (x) {
@@ -202,15 +198,28 @@ const updateChart = () => {
         }]
     }
     myChart.setOption(option)
+
+    // Bind the click event here
+    myChart.off('click') // Remove previous event listeners to avoid multiple bindings
+    myChart.on('click', handleChartClick)
+}
+
+const handleChartClick = (params) => {
+    if (params.dataType === 'node') {
+        alert(`节点: ${params.data.name}`)
+    } else if (params.dataType === 'edge') {
+        alert(`关系: ${params.data.name}`)
+    }
 }
 
 onMounted(() => {
     nextTick(() => {
-        myChart = echarts.init(main.value)
-        updateChart()
+        if (main.value) {
+            myChart = echarts.init(main.value)
+            updateChart()
 
-        window.addEventListener('resize', resizeChart)
-        myChart.on('click', handleChartClick)
+            window.addEventListener('resize', resizeChart)
+        }
     });
 })
 
@@ -227,6 +236,9 @@ function resizeChart() {
     }
 }
 </script>
+
+
+
 
 <style scoped>
 .container {
