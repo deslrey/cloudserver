@@ -13,8 +13,45 @@
             </div>
             <div v-else id="main" ref="main" class="main"></div>
         </div>
+
+        <el-dialog v-model="dialogVisiblePerson" title="编辑人节点信息">
+            <el-form :model="nodeForm">
+                <el-form-item label="节点名称">
+                    <el-input v-model="nodeForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="节点类型">
+                    <el-input v-model="nodeForm.type"></el-input>
+                </el-form-item>
+                <el-form-item label="节点信息">
+                    <el-input v-model="nodeForm.information"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisiblePerson = false">取消</el-button>
+                <el-button type="primary" @click="saveNode">保存</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog v-model="dialogVisibleEntitie" title="编辑物节点信息">
+            <el-form :model="nodeForm">
+                <el-form-item label="节点名称">
+                    <el-input v-model="nodeForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="节点类型">
+                    <el-input v-model="nodeForm.type"></el-input>
+                </el-form-item>
+                <el-form-item label="节点信息">
+                    <el-input v-model="nodeForm.information"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveNode">保存</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
+
 
 <script setup>
 import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
@@ -33,6 +70,14 @@ const options = ref([])
 const graphData = ref([])
 const linksData = ref([])
 const noData = ref(true)
+const dialogVisiblePerson = ref(false)
+const dialogVisibleEntitie = ref(false)
+const nodeForm = ref({
+    id: null,
+    name: '',
+    type: '',
+    information: ''
+})
 
 const getOptions = async () => {
     const result = await proxy.Request({
@@ -205,11 +250,31 @@ const updateChart = () => {
 }
 
 const handleChartClick = (params) => {
+    console.log('点击事件触发', params); // Add this log to check if the click event is triggered
     if (params.dataType === 'node') {
-        alert(`节点: ${params.data.name}`)
+        if (params.data.category === 0) {
+            dialogVisiblePerson.value = true
+            alert('我是人节点')
+        } else if (params.data.category === 1) {
+            alert('我是物节点')
+        }
+
+        nodeForm.value.id = params.data.id
+        nodeForm.value.name = params.data.name
+        nodeForm.value.type = params.data.category === 0 ? '人' : '物'
+        nodeForm.value.information = params.data.des
+        console.log('nodeForm ------> ', nodeForm);
+
+        dialogVisibleEntitie.value = true
     } else if (params.dataType === 'edge') {
         alert(`关系: ${params.data.name}`)
     }
+}
+
+const saveNode = () => {
+    console.log('保存节点:', nodeForm.value)
+    dialogVisible.value = false
+    // 保存节点的逻辑，例如调用后端接口保存数据
 }
 
 onMounted(() => {
@@ -236,7 +301,6 @@ function resizeChart() {
     }
 }
 </script>
-
 
 
 
