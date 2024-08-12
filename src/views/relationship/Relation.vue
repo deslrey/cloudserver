@@ -6,6 +6,7 @@
             </el-select>
             <el-input v-model="name" placeholder="请输入姓名" class="input-box" />
             <el-button type="primary" @click="handleSubmit">提交</el-button>
+            <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">点击我显示</el-button>
         </div>
         <div class="chart-container">
             <div v-if="noData" class="no-data-container">
@@ -16,14 +17,23 @@
 
         <el-dialog v-model="dialogVisiblePerson" title="编辑人节点信息">
             <el-form :model="nodeForm">
-                <el-form-item label="节点名称">
+                <el-form-item label="姓名">
                     <el-input v-model="nodeForm.name"></el-input>
                 </el-form-item>
-                <el-form-item label="节点类型">
-                    <el-input v-model="nodeForm.type"></el-input>
+                <el-form-item label="年龄">
+                    <el-input v-model="nodeForm.age"></el-input>
                 </el-form-item>
-                <el-form-item label="节点信息">
-                    <el-input v-model="nodeForm.information"></el-input>
+                <el-form-item label="性别">
+                    <el-input v-model="nodeForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="出生日期">
+                    <el-input v-model="nodeForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="身份证号">
+                    <el-input v-model="nodeForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="描述信息">
+                    <el-input v-model="nodeForm.description"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -34,19 +44,24 @@
 
         <el-dialog v-model="dialogVisibleEntitie" title="编辑物节点信息">
             <el-form :model="nodeForm">
-                <el-form-item label="节点名称">
+                <el-form-item label="名称">
                     <el-input v-model="nodeForm.name"></el-input>
                 </el-form-item>
-                <el-form-item label="节点类型">
-                    <el-input v-model="nodeForm.type"></el-input>
-                </el-form-item>
-                <el-form-item label="节点信息">
-                    <el-input v-model="nodeForm.information"></el-input>
+                <el-form-item label="描述信息">
+                    <el-input v-model="nodeForm.description"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取消</el-button>
+                <el-button @click="dialogVisibleEntitie = false">取消</el-button>
                 <el-button type="primary" @click="saveNode">保存</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog v-model="dialogVisibleShow" title="展示节点信息">
+            <h1>展示节点的信息</h1>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisibleShow = false">取消</el-button>
+                <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">确认</el-button>
             </span>
         </el-dialog>
     </div>
@@ -63,20 +78,28 @@ const api = {
 }
 
 const { proxy } = getCurrentInstance();
-const main = ref(null)
-const value = ref(null)
-const name = ref('')
-const options = ref([])
-const graphData = ref([])
-const linksData = ref([])
-const noData = ref(true)
-const dialogVisiblePerson = ref(false)
-const dialogVisibleEntitie = ref(false)
-const nodeForm = ref({
+let main = ref(null)
+let value = ref(null)
+let name = ref('')
+let options = ref([])
+let graphData = ref([])
+let linksData = ref([])
+let noData = ref(true)
+let dialogVisiblePerson = ref(false)
+let dialogVisibleEntitie = ref(false)
+let dialogVisibleShow = ref(false)
+let nodeForm = ref({
     id: null,
+    groupId: null,
+    nodeType: '',
+    role: '',
     name: '',
-    type: '',
-    information: ''
+    age: null,
+    gender: '',
+    birthplace: '',
+    idCard: '',
+    description: '',
+    exist: false
 })
 
 const getOptions = async () => {
@@ -260,14 +283,13 @@ const handleChartClick = (params) => {
         }
 
         nodeForm.value.id = params.data.id
+        nodeForm.value.id = params.data.id
         nodeForm.value.name = params.data.name
         nodeForm.value.type = params.data.category === 0 ? '人' : '物'
         nodeForm.value.information = params.data.des
         console.log('nodeForm ------> ', nodeForm);
-
-        dialogVisibleEntitie.value = true
     } else if (params.dataType === 'edge') {
-        alert(`关系: ${params.data.name}`)
+        alert(`关系线: ${params.data.name}`)
     }
 }
 
