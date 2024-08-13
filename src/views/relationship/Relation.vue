@@ -6,7 +6,9 @@
             </el-select>
             <el-input v-model="name" placeholder="请输入姓名" class="input-box" />
             <el-button type="primary" @click="handleSubmit">提交</el-button>
-            <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">点击我显示</el-button>
+            <el-switch v-model="switchValue" class="mb-2"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="编辑节点"
+                inactive-text="展示节点信息" />
         </div>
 
         <div class="chart-container">
@@ -73,6 +75,7 @@
 <script setup>
 import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { da, es, pa, tr } from 'element-plus/es/locales.mjs';
 
 const api = {
     getOptions: '/groups/getOptions',
@@ -88,6 +91,7 @@ let graphData = ref([])
 let linksData = ref([])
 let noData = ref(true)
 let dialogVisiblePerson = ref(false)
+let switchValue = ref(false)
 let dialogVisibleEntitie = ref(false)
 let dialogVisibleShow = ref(false)
 let nodeForm = ref({
@@ -129,6 +133,48 @@ const handleSubmit = () => {
     console.log('输入的姓名:', name.value)
     getGroupRela(value.value.id)
 }
+
+
+const categories = [
+    { name: '人' },
+    { name: '物' }
+]
+
+
+const handleChartClick = (params) => {
+    console.log('params ------>', params);
+
+    const data = params.data
+    currentNodeData.value = data.data
+    nodeForm.value.id = data.id
+    nodeForm.value.name = data.name
+    nodeForm.value.type = data.category === 0 ? '人' : '物'
+    nodeForm.value.description = data.des
+
+    if (params.dataType === 'node') {
+        if (switchValue.value) {
+            if (data.category === 0) {
+                dialogVisiblePerson.value = true
+            } else {
+                dialogVisibleEntitie.value = true
+            }
+        } else {
+            dialogVisibleShow.value = true
+        }
+
+
+    } else if (params.dataType === 'edge') {
+        alert(`关系线: ${params.data.name}`)
+    }
+}
+
+const saveNode = () => {
+    console.log('保存节点:', nodeForm.value)
+    dialogVisible.value = false
+    // 保存节点的逻辑，例如调用后端接口保存数据
+}
+
+let myChart = null
 
 const getGroupRela = async (groupId) => {
     const result = await proxy.Request({
@@ -195,12 +241,6 @@ const getGroupRela = async (groupId) => {
     })
 }
 
-const categories = [
-    { name: '人' },
-    { name: '物' }
-]
-
-let myChart = null
 
 const updateChart = () => {
     if (!myChart || noData.value) return
@@ -277,32 +317,11 @@ const updateChart = () => {
     myChart.on('click', handleChartClick)
 }
 
-const handleChartClick = (params) => {
-    if (params.dataType === 'node') {
-        currentNodeData.value = params.data
-        nodeForm.value.id = params.data.id
-        nodeForm.value.name = params.data.name
-        nodeForm.value.type = params.data.category === 0 ? '人' : '物'
-        nodeForm.value.information = params.data.des
-
-    } else if (params.dataType === 'edge') {
-        alert(`关系线: ${params.data.name}`)
-    }
-}
-
-const saveNode = () => {
-    console.log('保存节点:', nodeForm.value)
-    dialogVisible.value = false
-    // 保存节点的逻辑，例如调用后端接口保存数据
-}
-
-
 onMounted(() => {
     nextTick(() => {
         if (main.value) {
             myChart = echarts.init(main.value)
             updateChart()
-
             window.addEventListener('resize', resizeChart)
         }
     });
