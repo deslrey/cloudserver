@@ -8,6 +8,7 @@
             <el-button type="primary" @click="handleSubmit">提交</el-button>
             <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">点击我显示</el-button>
         </div>
+
         <div class="chart-container">
             <div v-if="noData" class="no-data-container">
                 <img src="../../assets/img/download.webp" alt="暂无数据" class="no-data-image">
@@ -64,6 +65,7 @@
                 <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">确认</el-button>
             </span>
         </el-dialog>
+
     </div>
 </template>
 
@@ -101,6 +103,9 @@ let nodeForm = ref({
     description: '',
     exist: false
 })
+const currentNodeData = ref(null) // 用于存储当前点击的节点数据
+
+
 
 const getOptions = async () => {
     const result = await proxy.Request({
@@ -273,21 +278,13 @@ const updateChart = () => {
 }
 
 const handleChartClick = (params) => {
-    console.log('点击事件触发', params); // Add this log to check if the click event is triggered
     if (params.dataType === 'node') {
-        if (params.data.category === 0) {
-            dialogVisiblePerson.value = true
-            alert('我是人节点')
-        } else if (params.data.category === 1) {
-            alert('我是物节点')
-        }
-
-        nodeForm.value.id = params.data.id
+        currentNodeData.value = params.data
         nodeForm.value.id = params.data.id
         nodeForm.value.name = params.data.name
         nodeForm.value.type = params.data.category === 0 ? '人' : '物'
         nodeForm.value.information = params.data.des
-        console.log('nodeForm ------> ', nodeForm);
+
     } else if (params.dataType === 'edge') {
         alert(`关系线: ${params.data.name}`)
     }
@@ -298,6 +295,7 @@ const saveNode = () => {
     dialogVisible.value = false
     // 保存节点的逻辑，例如调用后端接口保存数据
 }
+
 
 onMounted(() => {
     nextTick(() => {
@@ -335,6 +333,12 @@ function resizeChart() {
     height: 100vh;
     box-sizing: border-box;
 }
+
+.el-dropdown {
+    position: absolute;
+    z-index: 1000;
+}
+
 
 .form-container {
     display: flex;
