@@ -27,13 +27,13 @@
                     <el-input v-model="nodeForm.age"></el-input>
                 </el-form-item>
                 <el-form-item label="性别">
-                    <el-input v-model="nodeForm.name"></el-input>
+                    <el-input v-model="nodeForm.gender"></el-input>
                 </el-form-item>
-                <el-form-item label="出生日期">
-                    <el-input v-model="nodeForm.name"></el-input>
+                <el-form-item label="出生地">
+                    <el-input v-model="nodeForm.birthplace"></el-input>
                 </el-form-item>
                 <el-form-item label="身份证号">
-                    <el-input v-model="nodeForm.name"></el-input>
+                    <el-input v-model="nodeForm.idCard"></el-input>
                 </el-form-item>
                 <el-form-item label="描述信息">
                     <el-input v-model="nodeForm.description"></el-input>
@@ -108,7 +108,8 @@ let nodeForm = ref({
     description: '',
     exist: false
 })
-const currentNodeData = ref(null) // 用于存储当前点击的节点数据
+
+// let nodeForm = null
 
 
 
@@ -144,15 +145,18 @@ const categories = [
 
 
 const handleChartClick = (params) => {
-    console.log('params ------>', params);
 
     const data = params.data
-    currentNodeData.value = data.data
-    nodeForm.value.id = data.id
-    nodeForm.value.name = data.name
-    nodeForm.value.type = data.category === 0 ? '人' : '物'
-    nodeForm.value.description = data.des
+    console.log('data:', data)
 
+    if (!nodeDataMap.has(data.id)) {
+        proxy.Message.error("当前查看节点数据存在异常");
+        return
+    }
+
+    let node = nodeDataMap.get(data.id);
+
+    Object.assign(nodeForm.value, node);
     if (params.dataType === 'node') {
         if (switchValue.value) {
             if (data.category === 0) {
@@ -177,8 +181,7 @@ const saveNode = () => {
 }
 
 let myChart = null
-let personDataMap = new Map()
-let entitieDataMap = new Map()
+let nodeDataMap = new Map()
 
 const getAllData = async (groupId) => {
     const result = await proxy.Request({
@@ -192,17 +195,13 @@ const getAllData = async (groupId) => {
     }
 
     const data = result.data
-
-    console.log('data ------> ', data);
-
-
     let personList = data.person
     let entityList = data.entity
 
     personList.forEach(person => {
         let id = `${person.id}-${person.nodeType}`
-        if (!personDataMap.has(id)) {
-            personDataMap.set(id, {
+        if (!nodeDataMap.has(id)) {
+            nodeDataMap.set(id, {
                 ...person
             })
         }
@@ -210,15 +209,14 @@ const getAllData = async (groupId) => {
 
     entityList.forEach(entity => {
         let id = `${entity.id}-${entity.nodeType}`
-        if (!entitieDataMap.has(id)) {
-            entitieDataMap.set(id, {
+        if (!nodeDataMap.has(id)) {
+            nodeDataMap.set(id, {
                 ...entity
             })
         }
     })
 
-    console.log('map ------> ', entitieDataMap);
-
+    console.log('map ------> ', nodeDataMap);
 
 }
 
