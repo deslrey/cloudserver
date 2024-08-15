@@ -79,7 +79,8 @@ import { da, es, pa, tr } from 'element-plus/es/locales.mjs';
 
 const api = {
     getOptions: '/groups/getOptions',
-    getGroupRela: '/relationships/getGroupRela'
+    getGroupRela: '/relationships/getGroupRela',
+    getAllData: '/groupMembers/getAllData'
 }
 
 const { proxy } = getCurrentInstance();
@@ -132,6 +133,7 @@ const handleSubmit = () => {
     console.log('选择器的值:', value.value.id)
     console.log('输入的姓名:', name.value)
     getGroupRela(value.value.id)
+    getAllData(value.value.id)
 }
 
 
@@ -175,6 +177,50 @@ const saveNode = () => {
 }
 
 let myChart = null
+let personDataMap = new Map()
+let entitieDataMap = new Map()
+
+const getAllData = async (groupId) => {
+    const result = await proxy.Request({
+        url: api.getAllData,
+        showLoading: true,
+        params: { groupId: groupId }
+    })
+
+    if (!result || !result.data) {
+        return
+    }
+
+    const data = result.data
+
+    console.log('data ------> ', data);
+
+
+    let personList = data.person
+    let entityList = data.entity
+
+    personList.forEach(person => {
+        let id = `${person.id}-${person.nodeType}`
+        if (!personDataMap.has(id)) {
+            personDataMap.set(id, {
+                ...person
+            })
+        }
+    })
+
+    entityList.forEach(entity => {
+        let id = `${entity.id}-${entity.nodeType}`
+        if (!entitieDataMap.has(id)) {
+            entitieDataMap.set(id, {
+                ...entity
+            })
+        }
+    })
+
+    console.log('map ------> ', entitieDataMap);
+
+
+}
 
 const getGroupRela = async (groupId) => {
     const result = await proxy.Request({
@@ -192,6 +238,7 @@ const getGroupRela = async (groupId) => {
     const links = []
     const nodeMap = new Map()
 
+
     result.data.forEach(item => {
         const startNodeId = `${item.startId}-${item.startType}`
         const endNodeId = `${item.endId}-${item.endType}`
@@ -199,6 +246,7 @@ const getGroupRela = async (groupId) => {
         if (!nodeMap.has(startNodeId)) {
             nodeMap.set(startNodeId, {
                 id: startNodeId,
+                relationId: item.relationId,
                 name: item.startName,
                 des: item.startType === 'person' ? `${item.startName}(${item.startType})` : `${item.startName}(${item.endType})`,
                 symbolSize: 50,
@@ -208,6 +256,7 @@ const getGroupRela = async (groupId) => {
         if (!nodeMap.has(endNodeId)) {
             nodeMap.set(endNodeId, {
                 id: endNodeId,
+                relationId: item.relationId,
                 name: item.endName,
                 des: item.endType === 'person' ? `${item.endName}(${item.endType})` : `${item.endName}(${item.endType})`,
                 symbolSize: 50,
