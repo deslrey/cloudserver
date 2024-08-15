@@ -60,8 +60,40 @@
             </span>
         </el-dialog>
 
-        <el-dialog v-model="dialogVisibleShow" title="展示节点信息">
-            <h1>展示节点的信息</h1>
+        <el-dialog v-model="dialogVisibleShow" title="节点信息">
+            <div v-show="nodeForm.nodeType === 'person'">
+                <h2>
+                    <el-form-item label="姓名">
+                        {{ nodeForm.name }}
+                    </el-form-item>
+                    <el-form-item label="年龄">
+                        {{ nodeForm.age }}
+                    </el-form-item>
+                    <el-form-item label="性别">
+                        {{ nodeForm.gender }}
+                    </el-form-item>
+                    <el-form-item label="出生地">
+                        {{ nodeForm.birthplace }}
+                    </el-form-item>
+                    <el-form-item label="身份证号">
+                        {{ nodeForm.idCard }}
+                    </el-form-item>
+                    <el-form-item label="描述信息">
+                        {{ nodeForm.description }}
+                    </el-form-item>
+                </h2>
+            </div>
+            <div v-show="nodeForm.nodeType === 'entity'">
+                <h2>
+                    <el-form-item label="名称">
+                        <el-input v-model="nodeForm.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="描述信息">
+                        <el-input v-model="nodeForm.description"></el-input>
+                    </el-form-item>
+                </h2>
+            </div>
+
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisibleShow = false">取消</el-button>
                 <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">确认</el-button>
@@ -147,7 +179,6 @@ const categories = [
 const handleChartClick = (params) => {
 
     const data = params.data
-    console.log('data:', data)
 
     if (!nodeDataMap.has(data.id)) {
         proxy.Message.error("当前查看节点数据存在异常");
