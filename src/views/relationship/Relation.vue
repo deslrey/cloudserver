@@ -107,12 +107,12 @@
 <script setup>
 import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import * as echarts from 'echarts'
-import { da, es, pa, tr } from 'element-plus/es/locales.mjs';
 
 const api = {
     getOptions: '/groups/getOptions',
     getGroupRela: '/relationships/getGroupRela',
-    getAllData: '/groupMembers/getAllData'
+    getAllData: '/groupMembers/getAllData',
+    updateNodeData: '/groupMembers/updateNodeData'
 }
 
 const { proxy } = getCurrentInstance();
@@ -140,10 +140,6 @@ let nodeForm = ref({
     description: '',
     exist: false
 })
-
-// let nodeForm = null
-
-
 
 const getOptions = async () => {
     const result = await proxy.Request({
@@ -207,8 +203,31 @@ const handleChartClick = (params) => {
 
 const saveNode = () => {
     console.log('保存节点:', nodeForm.value)
-    dialogVisible.value = false
-    // 保存节点的逻辑，例如调用后端接口保存数据
+    dialogVisiblePerson.value = false
+    dialogVisibleEntitie.value = false
+
+    nodeForm.value.groupId = value.value.id
+    updateNodeData(nodeForm.value)
+}
+
+
+const updateNodeData = async (nodeData) => {
+    const result = await proxy.Request({
+        url: api.updateNodeData,
+        showLoading: true,
+        params: nodeData
+    })
+    if (result.code == 200) {
+        proxy.Message.success(`${result.message}`);
+        console.log('nodeDataMap1 ------> ', nodeDataMap);
+
+        nodeDataMap.clear()
+        console.log('nodeDataMap2 ------> ', nodeDataMap);
+        handleSubmit()
+        console.log('nodeDataMap3 ------> ', nodeDataMap);
+    }
+
+
 }
 
 let myChart = null
