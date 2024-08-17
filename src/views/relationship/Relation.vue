@@ -4,9 +4,11 @@
             <el-select v-model="value" filterable placeholder="选择班级" class="select-box" allow-create clearable>
                 <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item" />
             </el-select>
-            <el-input v-model="name" placeholder="请输入查询名称" class="input-box" />
-            <el-input v-model="idCard" placeholder="请输入身份证号" class="input-box" />
+            <el-input v-model="searchName" placeholder="请输入查询名称" class="input-box" clearable />
+            <el-input v-model="idCard" placeholder="请输入身份证号" class="input-box" clearable />
             <el-button type="primary" @click="handleSubmit">提交</el-button>
+            <span class="demonstration">高亮节点颜色</span>
+            <el-color-picker v-model="nodeColor" />
             <el-switch v-model="switchValue" class="mb-2"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="编辑节点"
                 inactive-text="展示节点信息" />
@@ -119,7 +121,7 @@ const api = {
 const { proxy } = getCurrentInstance();
 let main = ref(null)
 let value = ref(null)
-let name = ref('')
+let searchName = ref('')
 let idCard = ref('')
 let options = ref([])
 let graphData = ref([])
@@ -129,6 +131,7 @@ let dialogVisiblePerson = ref(false)
 let switchValue = ref(false)
 let dialogVisibleEntitie = ref(false)
 let dialogVisibleShow = ref(false)
+const nodeColor = ref('#FF0000')
 let nodeForm = ref({
     id: null,
     groupId: null,
@@ -282,7 +285,6 @@ const getGroupRela = async (groupId) => {
     const links = []
     const nodeMap = new Map()
 
-
     result.data.forEach(item => {
         const startNodeId = `${item.startId}-${item.startType}`
         const endNodeId = `${item.endId}-${item.endType}`
@@ -294,7 +296,10 @@ const getGroupRela = async (groupId) => {
                 name: item.startName,
                 des: item.startType === 'person' ? `${item.startName}(${item.startType})` : `${item.startName}(${item.endType})`,
                 symbolSize: 50,
-                category: item.startType === 'person' ? 0 : 1
+                category: item.startType === 'person' ? 0 : 1,
+                itemStyle: {
+                    color: searchName.value == '' ? null : item.startName.indexOf(searchName.value) == -1 ? null : nodeColor,
+                }
             })
         }
         if (!nodeMap.has(endNodeId)) {
@@ -304,7 +309,10 @@ const getGroupRela = async (groupId) => {
                 name: item.endName,
                 des: item.endType === 'person' ? `${item.endName}(${item.endType})` : `${item.endName}(${item.endType})`,
                 symbolSize: 50,
-                category: item.endType === 'person' ? 0 : 1
+                category: item.endType === 'person' ? 0 : 1,
+                itemStyle: {
+                    color: searchName.value == '' ? null : item.endName.indexOf(searchName.value) == -1 ? null : nodeColor,
+                }
             })
         }
         links.push({
@@ -375,7 +383,8 @@ const updateChart = () => {
             },
             force: {
                 repulsion: 2500,
-                edgeLength: [10, 50]
+                // edgeLength: [10, 50]
+                edgeLength: [20, 60]
             },
             draggable: true,
             lineStyle: {
@@ -461,7 +470,7 @@ function resizeChart() {
 
 .select-box,
 .input-box {
-    width: 240px;
+    width: 180px;
 }
 
 .chart-container {
