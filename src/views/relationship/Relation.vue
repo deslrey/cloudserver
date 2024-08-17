@@ -4,7 +4,8 @@
             <el-select v-model="value" filterable placeholder="选择班级" class="select-box" allow-create clearable>
                 <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item" />
             </el-select>
-            <el-input v-model="name" placeholder="请输入姓名" class="input-box" />
+            <el-input v-model="name" placeholder="请输入查询名称" class="input-box" />
+            <el-input v-model="idCard" placeholder="请输入身份证号" class="input-box" />
             <el-button type="primary" @click="handleSubmit">提交</el-button>
             <el-switch v-model="switchValue" class="mb-2"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="编辑节点"
@@ -119,6 +120,7 @@ const { proxy } = getCurrentInstance();
 let main = ref(null)
 let value = ref(null)
 let name = ref('')
+let idCard = ref('')
 let options = ref([])
 let graphData = ref([])
 let linksData = ref([])
@@ -219,15 +221,9 @@ const updateNodeData = async (nodeData) => {
     })
     if (result.code == 200) {
         proxy.Message.success(`${result.message}`);
-        console.log('nodeDataMap1 ------> ', nodeDataMap);
-
         nodeDataMap.clear()
-        console.log('nodeDataMap2 ------> ', nodeDataMap);
         handleSubmit()
-        console.log('nodeDataMap3 ------> ', nodeDataMap);
     }
-
-
 }
 
 let myChart = null
