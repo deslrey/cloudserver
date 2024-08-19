@@ -9,6 +9,9 @@
             <el-button type="primary" @click="handleSubmit">提交</el-button>
             <span class="demonstration">高亮节点颜色</span>
             <el-color-picker v-model="nodeColor" />
+            <el-switch v-model="vagueSearch" class="mb-2"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="模糊查找"
+                inactive-text="精准查找" />
             <el-switch v-model="switchValue" class="mb-2"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="编辑节点"
                 inactive-text="展示节点信息" />
@@ -128,6 +131,7 @@ let linksData = ref([])
 let noData = ref(true)
 let dialogVisiblePerson = ref(false)
 let switchValue = ref(false)
+let vagueSearch = ref(false)
 let dialogVisibleEntitie = ref(false)
 let dialogVisibleShow = ref(false)
 const nodeColor = ref('#FF0000')
