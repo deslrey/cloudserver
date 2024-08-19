@@ -102,7 +102,6 @@
                 <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">确认</el-button>
             </span>
         </el-dialog>
-
     </div>
 </template>
 
@@ -165,7 +164,7 @@ const handleSubmit = () => {
         return
     }
     console.log('选择器的值:', value.value.id)
-    console.log('输入的姓名:', name.value)
+    console.log('输入的姓名:', searchName.value)
     getGroupRela(value.value.id)
     getAllData(value.value.id)
 }
@@ -175,6 +174,8 @@ const categories = [
     { name: '人' },
     { name: '物' }
 ]
+
+
 
 
 const handleChartClick = (params) => {
@@ -288,30 +289,45 @@ const getGroupRela = async (groupId) => {
     result.data.forEach(item => {
         const startNodeId = `${item.startId}-${item.startType}`
         const endNodeId = `${item.endId}-${item.endType}`
+        let highlightNode = false
+        let highlightArrow = false
+        if (searchName.value != '') {
+            highlightNode = item.startName.indexOf(searchName.value) == -1 ? false : true
+            if (highlightNode) {
+                highlightArrow = true
+            }
+        }
 
         if (!nodeMap.has(startNodeId)) {
             nodeMap.set(startNodeId, {
                 id: startNodeId,
                 relationId: item.relationId,
                 name: item.startName,
-                des: item.startType === 'person' ? `${item.startName}(${item.startType})` : `${item.startName}(${item.endType})`,
+                des: `${item.startName}(${item.startType})`,
                 symbolSize: 50,
                 category: item.startType === 'person' ? 0 : 1,
                 itemStyle: {
-                    color: searchName.value == '' ? null : item.startName.indexOf(searchName.value) == -1 ? null : nodeColor,
+                    color: highlightNode ? nodeColor : null
                 }
             })
+        }
+        highlightNode = false
+        if (searchName.value != '') {
+            highlightNode = item.endName.indexOf(searchName.value) == -1 ? false : true
+            if (highlightNode) {
+                highlightArrow = true
+            }
         }
         if (!nodeMap.has(endNodeId)) {
             nodeMap.set(endNodeId, {
                 id: endNodeId,
                 relationId: item.relationId,
                 name: item.endName,
-                des: item.endType === 'person' ? `${item.endName}(${item.endType})` : `${item.endName}(${item.endType})`,
+                des: `${item.endName}(${item.endType})`,
                 symbolSize: 50,
                 category: item.endType === 'person' ? 0 : 1,
                 itemStyle: {
-                    color: searchName.value == '' ? null : item.endName.indexOf(searchName.value) == -1 ? null : nodeColor,
+                    color: highlightNode ? nodeColor : null
                 }
             })
         }
@@ -321,7 +337,10 @@ const getGroupRela = async (groupId) => {
             name: item.information,
             des: item.information,
             lineStyle: { color: '#4b565b' },
-            symbol: item.information.includes('好友') ? ['none', 'arrow'] : ['none', 'none']
+            symbol: item.information.includes('好友') ? ['none', 'arrow'] : ['none', 'none'],
+            lineStyle: {
+                color: highlightArrow ? nodeColor : null
+            }
         })
     })
 
