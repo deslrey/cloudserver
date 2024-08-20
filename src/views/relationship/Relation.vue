@@ -158,7 +158,11 @@ const getOptions = async () => {
     if (!result) {
         return
     }
+    console.log('data ------> ', result.data);
+
     options.value = result.data
+
+    console.log('options ------> ', options.value);
 }
 getOptions()
 
@@ -167,20 +171,15 @@ const handleSubmit = () => {
         proxy.Message.warning('请选择一个选项')
         return
     }
-    console.log('选择器的值:', value.value.id)
-    console.log('输入的姓名:', searchName.value)
+
     getGroupRela(value.value.id)
     getAllData(value.value.id)
 }
-
 
 const categories = [
     { name: '人' },
     { name: '物' }
 ]
-
-
-
 
 const handleChartClick = (params) => {
 
