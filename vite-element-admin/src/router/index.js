@@ -7,6 +7,7 @@ import {
 import Layout from '@/layout/index.vue'
 import nested from './modules/nested'
 import customComponents from './modules/customComponents'
+import files from "./modules/files"
 
 // 配置路由信息
 export const constantRoutes = [
@@ -107,6 +108,8 @@ export const asyncRoutes = [
       }
     ]
   },
+
+  files,
 
   // TODO 自定义组件
   customComponents,

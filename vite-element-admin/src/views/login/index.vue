@@ -3,7 +3,7 @@
     <div class="body fix-width">
       <div class="top">
         <logo class="logos" />
-        <div class="top-title">账号密码登录</div>
+        <div class="top-title">登录</div>
       </div>
       <div class="main">
         <login-pwd />
