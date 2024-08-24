@@ -18,9 +18,10 @@ export default {
             component: () => import('@/views/files/index.vue'),
             meta: {
                 title: '全部',
+                // icon: 'list',
                 noCache: false
             },
-            // redirect: '/files',
+            // redirect: 'all',
         },
         {
             path: '/files/video',
