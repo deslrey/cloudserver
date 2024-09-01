@@ -78,8 +78,6 @@ const request = (config) => {
   let contentType = contentTypeForm;
   let formData = new FormData();// 创建form对象
   for (let key in params) {
-    console.log('key ------> ', key);
-
     formData.append(key, params[key] == undefined ? "" : params[key]);
   }
   if (dataType != null && dataType == 'json') {

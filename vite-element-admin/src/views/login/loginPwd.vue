@@ -43,6 +43,7 @@ import { ref, onBeforeMount, reactive, computed } from 'vue'
 import { login } from '@/api/user'
 import { useUserStore } from '@/store'
 import { useRouter, useRoute } from 'vue-router'
+import md5 from "js-md5"
 
 const router = useRouter()
 const route = useRoute()
@@ -120,7 +121,7 @@ function loginHandle() {
       try {
         const params = {
           email: formState.account,
-          password: formState.password
+          password: md5(formState.password)
         }
         if (showCaptcha.value) {
           params.captchaId = captchaId.value
