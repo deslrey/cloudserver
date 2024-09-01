@@ -1,47 +1,44 @@
-import http from '@/utils/request'
+// import http from '@/utils/request'
+import request from '@/utils/request'
 
 // 用户列表
-export function UserList( data ) {
-  return http.request( {
-    method : 'post',
-    url : '/v1/user/list',
+export function UserList(data) {
+  return request({
+    url: '/v1/user/list',
     data
-  } )
+  })
 }
 
-export function login( data ) {
-  return http.request( {
-    method : 'get',
-    url : '/login',
-    data
-  } )
+export function login(data) {
+  console.log('data ------> ', data);
+
+  return request({
+    url: '/userInfo/login',
+    params: data
+  })
 }
 
-export function getInfo( data ) {
-  return http.request( {
-    method : 'get',
-    url : '/getUserInfo',
+export function getInfo(data) {
+  return request({
+    url: '/getUserInfo',
     data
-  } )
+  })
 }
 
 export function logout() {
-  return http.request( {
-    url : '/logout',
-    method : 'get'
-  } )
+  return request({
+    url: '/logout',
+  })
 }
 
 export function loginHistory() {
-  return http.request( {
-    url : '/login/history',
-    method : 'get'
-  } )
+  return request({
+    url: '/login/history',
+  })
 }
 
 export function testRequest() {
-  return http.request( {
-    url : '/test',
-    method : 'get'
-  } )
+  return request({
+    url: '/test',
+  })
 }

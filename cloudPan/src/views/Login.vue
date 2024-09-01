@@ -53,8 +53,7 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="registerPassword">
-            <el-input type="password" size="large" placeholder="请输入密码" v-model="formData.registerPassword"
-              show-password>
+            <el-input type="password" size="large" placeholder="请输入密码" v-model="formData.registerPassword" show-password>
               <template #prefix>
                 <span class="iconfont icon-password"></span>
               </template>
