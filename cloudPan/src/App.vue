@@ -14,5 +14,3 @@ const config = reactive({
   max: 1,
 });
 </script>
-
-<style scoped></style>
