@@ -45,6 +45,9 @@ import { useUserStore } from '@/store'
 import { useRouter, useRoute } from 'vue-router'
 import md5 from "js-md5"
 
+console.log('MD5 ------> ', md5('111111'));
+
+
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
@@ -55,7 +58,7 @@ const formState = reactive({
   country: '86',
   captcha: '',
   account: 'admin',
-  password: 'admin9527'
+  password: '111111'
 })
 const rules = {
   account: [{ required: true, message: '请输入手机或邮箱账号', trigger }],
@@ -127,8 +130,8 @@ function loginHandle() {
           params.captchaId = captchaId.value
           params.captchaValue = formState.captcha
         }
-        const { data } = await login(params)
-        const { token } = data
+        const result = await login(params)
+        const token = result.data
         userStore.SET_TOKEN(token)
         router.push('/')
       } catch (e) {

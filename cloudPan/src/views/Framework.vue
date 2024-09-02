@@ -54,7 +54,7 @@
             </template>
           </div>
         </div>
-        <div class="menu-sub-list">
+        <div class="menu-sub-list" v-if="!route.path.includes('recycle')">
           <div @click="jump(sub)" :class="['menu-item-sub', currentPath == sub.path ? 'active' : '']"
             v-for="sub in currentMenu.children">
             <span :class="['iconfont', 'icon-' + sub.icon]" v-if="sub.icon"></span>
@@ -101,7 +101,6 @@ import UpdatePassword from "./UpdatePassword.vue";
 import Uploader from "@/views/main/Uploader.vue";
 import {
   ref,
-  reactive,
   getCurrentInstance,
   watch,
   nextTick,
@@ -284,7 +283,8 @@ getUseSpace();
 
 // 计算属性：根据当前路径判断是否显示空间使用信息
 const showSpaceInfo = computed(() => {
-  return !route.path.includes('relationship');
+  // 当路径不包含 'relationship' 和 'recycle' 时才显示空间使用信息
+  return !route.path.includes('relationship') && !route.path.includes('recycle');
 });
 //修改头像
 const updateAvatarRef = ref();
