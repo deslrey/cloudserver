@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+
         <div class="form-container">
             <el-select v-model="value" filterable placeholder="选择班级" class="select-box" allow-create clearable>
                 <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item" />
@@ -12,9 +13,6 @@
             <el-switch v-model="vagueSearch" class="mb-2"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="模糊查找"
                 inactive-text="精准查找" />
-            <el-switch v-model="switchValue" class="mb-2"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="编辑节点"
-                inactive-text="展示节点信息" />
         </div>
 
         <div class="chart-container">
@@ -23,94 +21,30 @@
             </div>
             <div v-else id="main" ref="main" class="main"></div>
         </div>
-
-        <el-dialog v-model="dialogVisiblePerson" title="编辑人节点信息">
-            <el-form :model="nodeForm">
-                <el-form-item label="姓名">
-                    <el-input v-model="nodeForm.name"></el-input>
-                </el-form-item>
-                <el-form-item label="年龄">
-                    <el-input v-model="nodeForm.age"></el-input>
-                </el-form-item>
-                <el-form-item label="性别">
-                    <el-input v-model="nodeForm.gender"></el-input>
-                </el-form-item>
-                <el-form-item label="出生地">
-                    <el-input v-model="nodeForm.birthplace"></el-input>
-                </el-form-item>
-                <el-form-item label="身份证号">
-                    <el-input v-model="nodeForm.idCard"></el-input>
-                </el-form-item>
-                <el-form-item label="描述信息">
-                    <el-input v-model="nodeForm.description"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisiblePerson = false">取消</el-button>
-                <el-button type="primary" @click="saveNode">保存</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog v-model="dialogVisibleEntitie" title="编辑物节点信息">
-            <el-form :model="nodeForm">
-                <el-form-item label="名称">
-                    <el-input v-model="nodeForm.name"></el-input>
-                </el-form-item>
-                <el-form-item label="描述信息">
-                    <el-input v-model="nodeForm.description"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisibleEntitie = false">取消</el-button>
-                <el-button type="primary" @click="saveNode">保存</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog v-model="dialogVisibleShow" title="节点信息">
-            <div v-show="nodeForm.nodeType === 'person'">
-                <h2>
-                    <el-form-item label="姓名">
-                        {{ nodeForm.name }}
-                    </el-form-item>
-                    <el-form-item label="年龄">
-                        {{ nodeForm.age }}
-                    </el-form-item>
-                    <el-form-item label="性别">
-                        {{ nodeForm.gender }}
-                    </el-form-item>
-                    <el-form-item label="出生地">
-                        {{ nodeForm.birthplace }}
-                    </el-form-item>
-                    <el-form-item label="身份证号">
-                        {{ nodeForm.idCard }}
-                    </el-form-item>
-                    <el-form-item label="描述信息">
-                        {{ nodeForm.description }}
-                    </el-form-item>
-                </h2>
+        <!-- 添加侧边栏 -->
+        <!-- <el-dialog v-model="sidebarVisible" title="编辑物节点信息">
+            <h1>11</h1>
+        </el-dialog> -->
+        <el-drawer title="节点信息" v-model="sidebarVisible" size="30%" direction="rtl" :with-header="false">
+            <h2 class="show_node_title">节点信息</h2>
+            <div class="node-info">
+                <p><strong>名称:</strong> {{ nodeForm.name }}</p>
+                <p><strong>类型:</strong> {{ nodeForm.nodeType }}</p>
+                <p><strong>角色:</strong> {{ nodeForm.role }}</p>
+                <p><strong>年龄:</strong> {{ nodeForm.age }}</p>
+                <p><strong>性别:</strong> {{ nodeForm.gender }}</p>
+                <p><strong>出生地:</strong> {{ nodeForm.birthplace }}</p>
+                <p><strong>身份证号:</strong> {{ nodeForm.idCard }}</p>
+                <p><strong>描述:</strong> {{ nodeForm.description }}</p>
             </div>
-            <div v-show="nodeForm.nodeType === 'entity'">
-                <h2>
-                    <el-form-item label="名称">
-                        <el-input v-model="nodeForm.name"></el-input>
-                    </el-form-item>
-                    <el-form-item label="描述信息">
-                        <el-input v-model="nodeForm.description"></el-input>
-                    </el-form-item>
-                </h2>
-            </div>
-
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisibleShow = false">取消</el-button>
-                <el-button type="primary" @click="dialogVisibleShow = !dialogVisibleShow">确认</el-button>
-            </span>
-        </el-dialog>
+        </el-drawer>
     </div>
 </template>
 
 
 <script setup>
 import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
+
 import * as echarts from 'echarts'
 
 const api = {
@@ -119,7 +53,6 @@ const api = {
     getAllData: '/groupMembers/getAllData',
     updateNodeData: '/groupMembers/updateNodeData'
 }
-
 const { proxy } = getCurrentInstance();
 let main = ref(null)
 let value = ref(null)
@@ -129,11 +62,8 @@ let options = ref([])
 let graphData = ref([])
 let linksData = ref([])
 let noData = ref(true)
-let dialogVisiblePerson = ref(false)
-let switchValue = ref(false)
 let vagueSearch = ref(false)
-let dialogVisibleEntitie = ref(false)
-let dialogVisibleShow = ref(false)
+const sidebarVisible = ref(false) // 控制侧边栏显示
 const nodeColor = ref('#FF0000')
 let nodeForm = ref({
     id: null,
@@ -158,11 +88,7 @@ const getOptions = async () => {
     if (!result) {
         return
     }
-    console.log('data ------> ', result.data);
-
     options.value = result.data
-
-    console.log('options ------> ', options.value);
 }
 getOptions()
 
@@ -182,6 +108,8 @@ const categories = [
 ]
 
 const handleChartClick = (params) => {
+    console.log("Node clicked:", params);  // Add this line to check if the event triggers
+
 
     const data = params.data
 
@@ -194,42 +122,11 @@ const handleChartClick = (params) => {
 
     Object.assign(nodeForm.value, node);
     if (params.dataType === 'node') {
-        if (switchValue.value) {
-            if (data.category === 0) {
-                dialogVisiblePerson.value = true
-            } else {
-                dialogVisibleEntitie.value = true
-            }
-        } else {
-            dialogVisibleShow.value = true
-        }
-
-
+        // 打开侧边栏
+        sidebarVisible.value = true;
+        // alert(`节点: ${params.data.name}`)
     } else if (params.dataType === 'edge') {
         alert(`关系线: ${params.data.name}`)
-    }
-}
-
-const saveNode = () => {
-    console.log('保存节点:', nodeForm.value)
-    dialogVisiblePerson.value = false
-    dialogVisibleEntitie.value = false
-
-    nodeForm.value.groupId = value.value.id
-    updateNodeData(nodeForm.value)
-}
-
-
-const updateNodeData = async (nodeData) => {
-    const result = await proxy.Request({
-        url: api.updateNodeData,
-        showLoading: true,
-        params: nodeData
-    })
-    if (result.code == 200) {
-        proxy.Message.success(`${result.message}`);
-        nodeDataMap.clear()
-        handleSubmit()
     }
 }
 
@@ -468,6 +365,15 @@ function resizeChart() {
 
 
 <style scoped>
+.node-info {
+    padding: 20px;
+}
+
+.node-info p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -521,5 +427,9 @@ function resizeChart() {
 .no-data-image {
     max-width: 100%;
     max-height: 100%;
+}
+
+.show_node_title {
+    text-align: center;
 }
 </style>
