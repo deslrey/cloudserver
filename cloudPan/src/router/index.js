@@ -40,7 +40,7 @@ const router = createRouter({
           name: '关系',
           meta: {
             needLogin: true,
-            menuCode: "relationship"
+            menuCode: "relation"
           },
           component: () => import("@/views/relationship/Relation.vue")
         },
@@ -49,7 +49,7 @@ const router = createRouter({
           name: '组数据',
           meta: {
             needLogin: true,
-            menuCode: "relationship"
+            menuCode: "groups"
           },
           component: () => import("@/views/relationship/RelationGroup.vue")
         },

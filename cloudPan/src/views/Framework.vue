@@ -54,7 +54,7 @@
             </template>
           </div>
         </div>
-        <div class="menu-sub-list" v-if="!route.path.includes('recycle')">
+        <div class="menu-sub-list" v-if=shouldShowMenuSubList>
           <div @click="jump(sub)" :class="['menu-item-sub', currentPath == sub.path ? 'active' : '']"
             v-for="sub in currentMenu.children">
             <span :class="['iconfont', 'icon-' + sub.icon]" v-if="sub.icon"></span>
@@ -139,6 +139,10 @@ const uploadCallbackHandler = () => {
   });
 };
 
+const shouldShowMenuSubList = computed(() => {
+  return !route.path.includes('recycle') && !route.path.includes('relationship');
+});
+
 const menus = [
   {
     icon: "cloude",
@@ -202,19 +206,16 @@ const menus = [
   {
     path: "/relationship/groups",
     icon: "share1",
-    name: "关系",
-    menuCode: "relationship",
+    name: "组数据管理",
+    menuCode: "groups",
     allShow: true,
-    children: [
-      {
-        name: '组数据管理',
-        path: '/relationship/groups',
-      },
-      {
-        name: '关系展示',
-        path: "/relationship/relation",
-      }
-    ]
+  },
+  {
+    path: "/relationship/relation",
+    icon: "share1",
+    name: "关系展示",
+    menuCode: "relation",
+    allShow: true,
   },
   {
     path: "/settings/fileList",
