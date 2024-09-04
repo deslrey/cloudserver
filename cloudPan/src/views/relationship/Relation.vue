@@ -37,7 +37,7 @@
                     <div class="button-group">
                         <!-- 编辑按钮 -->
                         <el-button v-if="hoverIndex === index && editIndex !== index" @click="startEditing(index, item)"
-                            type="link" icon="el-icon-edit" class="edit-btn">
+                            type="primary" icon="el-icon-edit" class="edit-btn">
                             编辑
                         </el-button>
 
