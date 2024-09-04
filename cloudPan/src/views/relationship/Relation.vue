@@ -21,44 +21,46 @@
             </div>
             <div v-else id="main" ref="main" class="main"></div>
         </div>
-        <!-- 添加侧边栏 -->
-        <el-drawer title="节点信息" v-model="sidebarVisible" size="30%" direction="rtl" :with-header="false">
-            <div class="node-info">
-                <div v-for="(item, index) in nodeInfo" :key="index" class="info-item"
-                    :class="{ 'highlight': hoverIndex === index }" @mouseenter="hoverIndex = index"
-                    @mouseleave="hoverIndex = null">
-                    <div class="item-content">
-                        <span class="item-label">{{ item.label }}: </span>
-                        <!-- 显示原值或输入框 -->
-                        <span v-if="!item.editMode" class="item-value">{{ item.value }}</span>
-                        <input v-if="item.editMode" type="text" v-model="item.tempValue" class="edit-input" />
+
+        <!-- 侧边栏 -->
+        <el-drawer title="节点详情" v-model="isSidebarVisible" direction="rtl" size="300px" :wrapper-closable="false"
+            @close="handleClose">
+            <ul class="sidebar-list">
+                <li v-for="(item, index) in items" :key="index" @mouseover="hoverIndex = index"
+                    @mouseleave="hoverIndex = null" class="sidebar-item">
+                    <!-- 显示数据 -->
+                    <span v-if="editIndex !== index" class="item-content">{{ item }}</span>
+
+                    <!-- 编辑模式 -->
+                    <el-input v-else v-model="editedValue" size="small" class="edit-input item-content"></el-input>
+
+                    <div class="button-group">
+                        <!-- 编辑按钮 -->
+                        <el-button v-if="hoverIndex === index && editIndex !== index" @click="startEditing(index, item)"
+                            type="link" icon="el-icon-edit" class="edit-btn">
+                            编辑
+                        </el-button>
+
+                        <!-- 确认和取消按钮 -->
+                        <div v-if="editIndex === index" class="action-btns">
+                            <el-button @click="confirmEdit(index)" type="primary" size="small">
+                                确认
+                            </el-button>
+                            <el-button @click="cancelEdit" type="default" size="small">
+                                取消
+                            </el-button>
+                        </div>
                     </div>
-                    <!-- 编辑按钮 -->
-                    <span v-if="!item.editMode && editingIndex === null" class="edit-btn"
-                        @click="() => editItem(index)">
-                        编辑
-                    </span>
-                    <!-- 编辑状态下的操作按钮 -->
-                    <div v-if="item.editMode" class="op-buttons">
-                        <span class="confirm-btn" @click="() => confirmEdit(index)">确认</span>
-                        <span class="cancel-btn" @click="() => cancelEdit(index)">取消</span>
-                    </div>
-                </div>
-            </div>
-            <!-- 自定义底部 -->
-            <template #footer>
-                <div style="display: flex; justify-content: center; padding: 10px;">
-                    <el-button @click="cancel" style="margin-right: 10px;">取消</el-button>
-                    <el-button type="primary" @click="confirm">确认</el-button>
-                </div>
-            </template>
+                </li>
+            </ul>
         </el-drawer>
+
     </div>
 </template>
 
 
 <script setup>
-import { ref, reactive, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
 
 import * as echarts from 'echarts'
 
@@ -79,13 +81,6 @@ let linksData = ref([])
 let noData = ref(true)
 let vagueSearch = ref(false)
 
-const sidebarVisible = ref(false) // 控制侧边栏显示
-// 当前悬停的行索引
-const hoverIndex = ref(null)
-
-// 当前编辑的行索引
-const editingIndex = ref(null)
-
 const nodeColor = ref('#FF0000')
 let nodeForm = ref({
     id: null,
@@ -101,39 +96,40 @@ let nodeForm = ref({
     exist: false
 })
 
-const nodeInfo = ref([
-    { label: '名称', value: '节点1', tempValue: '', editMode: false },
-    { label: '类型', value: '类型A', tempValue: '', editMode: false },
-    // 可以添加更多字段...
-])
 
-// 编辑功能
-const editItem = (index) => {
-    if (editingIndex.value !== null) {
-        // 如果已有行在编辑状态，取消编辑状态
-        cancelEdit(editingIndex.value)
-    }
-    nodeInfo.value[index].tempValue = nodeInfo.value[index].value
-    nodeInfo.value[index].editMode = true
-    editingIndex.value = index
-}
+const isSidebarVisible = ref(false); // 控制侧边栏显示状态
+const items = ref(['数据1', '数据2', '数据3']); // 示例数据
+const hoverIndex = ref(null); // 悬停的索引
+const editIndex = ref(null); // 当前编辑的索引
+const editedValue = ref(''); // 当前编辑的值
 
-const cancelEdit = (index) => {
-    nodeInfo.value[index].editMode = false
-    nodeInfo.value[index].tempValue = ''
-    if (editingIndex.value === index) {
-        editingIndex.value = null
-    }
-}
 
+// 关闭侧边栏
+const handleClose = () => {
+    isSidebarVisible.value = false;
+    // 清空编辑状态
+    editIndex.value = null;
+    editedValue.value = '';
+};
+
+
+// 开始编辑
+const startEditing = (index, value) => {
+    editIndex.value = index;
+    editedValue.value = value;
+};
+
+// 确认编辑
 const confirmEdit = (index) => {
-    nodeInfo.value[index].value = nodeInfo.value[index].tempValue
-    nodeInfo.value[index].editMode = false
-    nodeInfo.value[index].tempValue = ''
-    if (editingIndex.value === index) {
-        editingIndex.value = null
-    }
-}
+    items.value[index] = editedValue.value;
+    editIndex.value = null;
+};
+
+// 取消编辑
+const cancelEdit = () => {
+    editIndex.value = null;
+    editedValue.value = '';
+};
 
 const getOptions = async () => {
     const result = await proxy.Request({
@@ -164,10 +160,9 @@ const categories = [
 ]
 
 const handleChartClick = (params) => {
-    console.log("Node clicked:", params);  // Add this line to check if the event triggers
-
-
     const data = params.data
+
+    console.log("节点数据 ------> ", data);  // Add this line to check if the event triggers
 
     if (!nodeDataMap.has(data.id)) {
         proxy.Message.error("当前查看节点数据存在异常");
@@ -176,10 +171,14 @@ const handleChartClick = (params) => {
 
     let node = nodeDataMap.get(data.id);
 
+    console.log('node ------> ', node);
+
+
     Object.assign(nodeForm.value, node);
     if (params.dataType === 'node') {
-        // 打开侧边栏
-        sidebarVisible.value = true;
+        isSidebarVisible.value = true
+        console.log('打开侧边栏');
+
         // alert(`节点: ${params.data.name}`)
     } else if (params.dataType === 'edge') {
         alert(`关系线: ${params.data.name}`)
@@ -421,95 +420,30 @@ function resizeChart() {
 
 
 <style scoped>
-.node-info {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    /* 数据和按钮分开 */
-    align-items: center;
-    padding: 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-    /* 平滑的背景色过渡效果 */
-}
-
-.info-item.highlight {
-    background-color: #f5f5f5;
-    /* 高亮显示的背景色 */
-}
-
-.item-content {
+li {
     display: flex;
     align-items: center;
-    gap: 10px;
-    /* 数据和编辑按钮之间的间隔 */
-}
-
-.item-label {
-    font-weight: bold;
-}
-
-.item-value {
-    margin-right: 20px;
-    /* 数据和编辑按钮之间的间隔 */
-}
-
-.edit-input {
-    border: 1px solid #dcdfe6;
-    /* 边框颜色 */
-    padding: 5px 10px;
-    /* 内边距，调整输入框高度和宽度 */
-    border-radius: 4px;
-    /* 圆角 */
-    font-size: 14px;
-    /* 字体大小 */
-    outline: none;
-    /* 移除点击后的外框 */
-    transition: border-color 0.3s, box-shadow 0.3s;
-    /* 添加平滑过渡效果 */
-}
-
-.edit-input:focus {
-    border-color: #409eff;
-    /* 聚焦时的边框颜色 */
-    box-shadow: 0 0 5px rgba(64, 158, 255, 0.3);
-    /* 聚焦时的阴影效果 */
-}
-
-.edit-btn,
-.confirm-btn,
-.cancel-btn {
-    cursor: pointer;
-    padding: 2px 5px;
-    border-radius: 4px;
+    justify-content: space-between; /* 让内容在左右两侧对齐 */
+    margin-bottom: 10px;
 }
 
 .edit-btn {
-    color: #409eff;
-    border: 1px solid #409eff;
+    margin-left: auto; /* 编辑按钮靠右 */
 }
 
-.confirm-btn {
-    color: #67c23a;
-    border: 1px solid #67c23a;
-}
-
-.cancel-btn {
-    color: #f56c6c;
-    border: 1px solid #f56c6c;
-}
-
-.op-buttons {
+.action-btns {
     display: flex;
-    gap: 8px;
+    gap: 10px; /* 确认和取消按钮之间的间距 */
 }
 
+.action-btns .el-button {
+    margin-left: 10px; /* 确保编辑按钮与操作按钮的样式统一 */
+}
 
+.edit-input {
+    flex: 1; /* 输入框占据左侧空间 */
+    margin-right: 10px; /* 输入框与按钮之间的间距 */
+}
 
 .node-info p {
     margin: 10px 0;
