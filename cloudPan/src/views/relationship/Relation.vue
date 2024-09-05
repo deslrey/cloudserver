@@ -28,28 +28,33 @@
             <ul class="sidebar-list">
                 <li v-for="(item, index) in items" :key="index" @mouseover="hoverIndex = index"
                     @mouseleave="hoverIndex = null" class="sidebar-item">
-                    {{ personSidebarList[index] }} :
-                    <!-- 显示数据 -->
-                    <span v-if="editIndex !== index" class="item-content">{{ item }}</span>
+                    <div class="item-row">
+                        <!-- 数据标题 -->
+                        <span class="item-title">{{ personSidebarList[index] }} :</span>
 
-                    <!-- 编辑模式 -->
-                    <el-input v-else v-model="editedValue" size="small" class="edit-input item-content"></el-input>
+                        <!-- 显示数据 -->
+                        <span v-if="editIndex !== index" class="item-content">{{ item }}</span>
 
-                    <div class="button-group">
-                        <!-- 编辑按钮 -->
-                        <el-button v-if="hoverIndex === index && editIndex !== index" @click="startEditing(index, item)"
-                            type="primary" icon="el-icon-edit" class="edit-btn">
-                            编辑
-                        </el-button>
+                        <!-- 编辑模式 -->
+                        <el-input v-else v-model="editedValue" size="small" class="edit-input item-content"></el-input>
 
-                        <!-- 确认和取消按钮 -->
-                        <div v-if="editIndex === index" class="action-btns">
-                            <el-button @click="confirmEdit(index)" type="primary" size="small">
-                                确认
+                        <!-- 按钮组 -->
+                        <div class="button-group">
+                            <!-- 编辑按钮 -->
+                            <el-button v-if="hoverIndex === index && editIndex !== index"
+                                @click="startEditing(index, item)" type="primary" size="small"
+                                class="edit-btn">编辑
                             </el-button>
-                            <el-button @click="cancelEdit" type="default" size="small">
-                                取消
-                            </el-button>
+
+                            <!-- 确认和取消按钮 -->
+                            <div v-if="editIndex === index" class="action-btns">
+                                <el-button @click="confirmEdit(index)" type="primary" size="small">
+                                    确认
+                                </el-button>
+                                <el-button @click="cancelEdit" type="default" size="small">
+                                    取消
+                                </el-button>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -421,36 +426,80 @@ function resizeChart() {
 
 
 <style scoped>
-li {
+/* 每行保持水平布局，避免挤压 */
+.sidebar-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* 让内容在左右两侧对齐 */
+    flex-direction: column;
     margin-bottom: 10px;
 }
 
-.edit-btn {
-    margin-left: auto;
-    /* 编辑按钮靠右 */
+.item-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* 控制标题、数据和按钮之间的间距 */
 }
 
+/* 数据标题样式 */
+.item-title {
+    white-space: nowrap;
+    /* 保证标题不会折行 */
+}
+
+/* 按钮组样式优化 */
+.button-group {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    /* 按钮组移到最右侧 */
+}
+
+.edit-btn {
+    padding: 4px 8px;
+    /* 增加按钮内边距 */
+    font-size: 12px;
+    /* 调整字体大小 */
+    color: #fff;
+    /* 按钮文字颜色 */
+    background-color: #409eff;
+    /* 设置背景颜色 */
+    border-radius: 4px;
+    /* 圆角效果 */
+    border: 1px solid #409eff;
+    /* 边框颜色与背景一致 */
+    cursor: pointer;
+    /* 鼠标悬停效果 */
+    display: flex;
+    /* 使用 Flex 布局 */
+    justify-content: center;
+    /* 水平居中 */
+    align-items: center;
+    /* 垂直居中 */
+    transition: background-color 0.3s;
+    /* 增加按钮的悬停过渡效果 */
+    text-align: center;
+}
+
+.edit-btn:hover {
+    background-color: #66b1ff;
+    /* 悬停时按钮变色 */
+}
+
+/* 确认和取消按钮的样式 */
 .action-btns {
     display: flex;
-    gap: 10px;
-    /* 确认和取消按钮之间的间距 */
-}
-
-.action-btns .el-button {
-    margin-left: 10px;
-    /* 确保编辑按钮与操作按钮的样式统一 */
+    gap: 5px;
 }
 
 .edit-input {
     flex: 1;
-    /* 输入框占据左侧空间 */
     margin-right: 10px;
-    /* 输入框与按钮之间的间距 */
 }
+.item-content {
+    padding: 7px;
+}
+
+
 
 .node-info p {
     margin: 10px 0;
