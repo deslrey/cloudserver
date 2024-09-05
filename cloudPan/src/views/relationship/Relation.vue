@@ -28,6 +28,7 @@
             <ul class="sidebar-list">
                 <li v-for="(item, index) in items" :key="index" @mouseover="hoverIndex = index"
                     @mouseleave="hoverIndex = null" class="sidebar-item">
+                    {{ personSidebarList[index] }} :
                     <!-- 显示数据 -->
                     <span v-if="editIndex !== index" class="item-content">{{ item }}</span>
 
@@ -103,6 +104,9 @@ const hoverIndex = ref(null); // 悬停的索引
 const editIndex = ref(null); // 当前编辑的索引
 const editedValue = ref(''); // 当前编辑的值
 
+const personSidebarList = ref(['名称', '性别', '年龄', '出生地', '出生日期', '身份证号', '描述'])
+const entitySidebarList = ref(['名称', '描述'])
+
 
 // 关闭侧边栏
 const handleClose = () => {
@@ -177,8 +181,6 @@ const handleChartClick = (params) => {
     Object.assign(nodeForm.value, node);
     if (params.dataType === 'node') {
         isSidebarVisible.value = true
-        console.log('打开侧边栏');
-
         // alert(`节点: ${params.data.name}`)
     } else if (params.dataType === 'edge') {
         alert(`关系线: ${params.data.name}`)
@@ -357,7 +359,6 @@ const updateChart = () => {
             },
             force: {
                 repulsion: 2500,
-                // edgeLength: [10, 50]
                 edgeLength: [20, 60]
             },
             draggable: true,
@@ -423,26 +424,32 @@ function resizeChart() {
 li {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 让内容在左右两侧对齐 */
+    justify-content: space-between;
+    /* 让内容在左右两侧对齐 */
     margin-bottom: 10px;
 }
 
 .edit-btn {
-    margin-left: auto; /* 编辑按钮靠右 */
+    margin-left: auto;
+    /* 编辑按钮靠右 */
 }
 
 .action-btns {
     display: flex;
-    gap: 10px; /* 确认和取消按钮之间的间距 */
+    gap: 10px;
+    /* 确认和取消按钮之间的间距 */
 }
 
 .action-btns .el-button {
-    margin-left: 10px; /* 确保编辑按钮与操作按钮的样式统一 */
+    margin-left: 10px;
+    /* 确保编辑按钮与操作按钮的样式统一 */
 }
 
 .edit-input {
-    flex: 1; /* 输入框占据左侧空间 */
-    margin-right: 10px; /* 输入框与按钮之间的间距 */
+    flex: 1;
+    /* 输入框占据左侧空间 */
+    margin-right: 10px;
+    /* 输入框与按钮之间的间距 */
 }
 
 .node-info p {
