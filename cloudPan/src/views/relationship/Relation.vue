@@ -445,12 +445,16 @@ function resizeChart() {
     /* 固定行高，防止编辑时撑开 */
     transition: height 0.3s;
     /* 增加行高过渡效果 */
+    overflow: hidden;
+    /* 防止内容溢出 */
 }
 
 /* 数据标题样式 */
 .item-title {
     font-weight: bold;
     white-space: nowrap;
+    font-size: 14px;
+    /* 设定字体大小 */
 }
 
 /* 按钮组样式优化 */
@@ -476,8 +480,11 @@ function resizeChart() {
     height: 32px;
     /* 固定按钮高度 */
     box-sizing: border-box;
+    line-height: 1;
+    /* 确保文本垂直居中 */
 }
 
+/* 鼠标悬停时的效果 */
 .edit-btn:hover {
     background-color: #66b1ff;
 }
@@ -509,7 +516,10 @@ function resizeChart() {
     /* 使输入框边角与按钮一致 */
     transition: all 0.3s;
     /* 添加过渡效果 */
-    /* 与按钮内边距一致 */
+    font-size: 14px;
+    /* 设定字体大小 */
+    line-height: 32px;
+    /* 确保文本垂直居中 */
 }
 
 /* 强制去除 Element Plus 输入框外层边框 */
@@ -520,6 +530,8 @@ function resizeChart() {
     /* 去掉外边框阴影效果 */
     padding: 4px 8px !important;
     /* 确保内边距一致 */
+    font-size: 14px;
+    /* 设定字体大小 */
 }
 
 /* 数据内容样式 */
@@ -527,16 +539,28 @@ function resizeChart() {
     white-space: nowrap;
     transition: opacity 0.3s;
     /* 添加过渡效果 */
-    font-size: 100%;
+    font-size: 14px;
+    /* 设定字体大小 */
 }
 
 /* 标题样式 */
 .node-sidebar-title {
     text-align: center;
-    padding: 10px;
+    padding: 0;
+    /* 移除内部边距 */
+    margin: 0;
+    /* 移除外部边距 */
+    font-size: 30px;
+    /* 调整字体大小，适配布局 */
+    line-height: 1.5;
+    /* 调整行高 */
 }
 
-
+/* Vue SFC 中的 scoped 样式需要使用深度选择器 >>> 或 ::v-deep */
+:deep(.el-drawer__header) {
+    margin-bottom: 0 !important;
+    /* 强制去掉默认的 margin */
+}
 
 
 
