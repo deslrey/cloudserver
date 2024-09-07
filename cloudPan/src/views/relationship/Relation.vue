@@ -22,9 +22,9 @@
             <div v-else id="main" ref="main" class="main"></div>
         </div>
 
-        <!-- 侧边栏 -->
-        <el-drawer title="节点详情" v-model="isSidebarVisible" direction="rtl" size="300px" :wrapper-closable="false"
-            @close="handleClose">
+        <!-- 人物节点侧边栏 -->
+        <el-drawer v-model="isSidebarVisible" direction="rtl" size="35%" :wrapper-closable="false" @close="handleClose">
+            <h2 class="node-sidebar-title">节点信息</h2>
             <ul class="sidebar-list">
                 <li v-for="(item, index) in items" :key="index" @mouseover="hoverIndex = index"
                     @mouseleave="hoverIndex = null" class="sidebar-item">
@@ -42,8 +42,7 @@
                         <div class="button-group">
                             <!-- 编辑按钮 -->
                             <el-button v-if="hoverIndex === index && editIndex !== index"
-                                @click="startEditing(index, item)" type="primary" size="small"
-                                class="edit-btn">编辑
+                                @click="startEditing(index, item)" type="primary" size="small" class="edit-btn">编辑
                             </el-button>
 
                             <!-- 确认和取消按钮 -->
@@ -60,6 +59,10 @@
                 </li>
             </ul>
         </el-drawer>
+
+        <!-- 物品节点侧边栏 -->
+
+
 
     </div>
 </template>
@@ -101,7 +104,6 @@ let nodeForm = ref({
     description: '',
     exist: false
 })
-
 
 const isSidebarVisible = ref(false); // 控制侧边栏显示状态
 const items = ref(['数据1', '数据2', '数据3']); // 示例数据
@@ -183,7 +185,8 @@ const handleChartClick = (params) => {
     console.log('node ------> ', node);
 
 
-    Object.assign(nodeForm.value, node);
+    Object.assign(nodeForm.value, node)
+
     if (params.dataType === 'node') {
         isSidebarVisible.value = true
         // alert(`节点: ${params.data.name}`)
@@ -437,13 +440,17 @@ function resizeChart() {
     display: flex;
     align-items: center;
     gap: 10px;
-    /* 控制标题、数据和按钮之间的间距 */
+    width: 100%;
+    height: 32px;
+    /* 固定行高，防止编辑时撑开 */
+    transition: height 0.3s;
+    /* 增加行高过渡效果 */
 }
 
 /* 数据标题样式 */
 .item-title {
+    font-weight: bold;
     white-space: nowrap;
-    /* 保证标题不会折行 */
 }
 
 /* 按钮组样式优化 */
@@ -451,38 +458,28 @@ function resizeChart() {
     display: flex;
     align-items: center;
     margin-left: auto;
-    /* 按钮组移到最右侧 */
 }
 
+/* 编辑按钮样式 */
 .edit-btn {
-    padding: 4px 8px;
-    /* 增加按钮内边距 */
     font-size: 12px;
-    /* 调整字体大小 */
     color: #fff;
-    /* 按钮文字颜色 */
     background-color: #409eff;
-    /* 设置背景颜色 */
     border-radius: 4px;
-    /* 圆角效果 */
     border: 1px solid #409eff;
-    /* 边框颜色与背景一致 */
     cursor: pointer;
-    /* 鼠标悬停效果 */
     display: flex;
-    /* 使用 Flex 布局 */
     justify-content: center;
-    /* 水平居中 */
     align-items: center;
-    /* 垂直居中 */
     transition: background-color 0.3s;
-    /* 增加按钮的悬停过渡效果 */
     text-align: center;
+    height: 32px;
+    /* 固定按钮高度 */
+    box-sizing: border-box;
 }
 
 .edit-btn:hover {
     background-color: #66b1ff;
-    /* 悬停时按钮变色 */
 }
 
 /* 确认和取消按钮的样式 */
@@ -491,13 +488,55 @@ function resizeChart() {
     gap: 5px;
 }
 
+/* 输入框样式 */
 .edit-input {
     flex: 1;
-    margin-right: 10px;
+    /* 输入框占据剩余空间 */
+    min-width: 0;
+    /* 防止输入框过大 */
+    height: 32px;
+    /* 固定输入框高度，与按钮一致 */
+    margin-right: 5px;
+    /* 控制与按钮的间距 */
+    box-sizing: border-box;
+    border: none;
+    /* 去掉默认边框 */
+    outline: none;
+    /* 去掉输入聚焦时的外边框 */
+    box-shadow: 0 0 0 1px rgba(220, 223, 230, 0.8);
+    /* 使用淡色阴影模拟边框效果 */
+    border-radius: 4px;
+    /* 使输入框边角与按钮一致 */
+    transition: all 0.3s;
+    /* 添加过渡效果 */
+    /* 与按钮内边距一致 */
 }
+
+/* 强制去除 Element Plus 输入框外层边框 */
+.el-input__inner {
+    border: none !important;
+    /* 去掉输入框的默认外边框 */
+    box-shadow: none !important;
+    /* 去掉外边框阴影效果 */
+    padding: 4px 8px !important;
+    /* 确保内边距一致 */
+}
+
+/* 数据内容样式 */
 .item-content {
-    padding: 7px;
+    white-space: nowrap;
+    transition: opacity 0.3s;
+    /* 添加过渡效果 */
+    font-size: 100%;
 }
+
+/* 标题样式 */
+.node-sidebar-title {
+    text-align: center;
+    padding: 10px;
+}
+
+
 
 
 
