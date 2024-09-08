@@ -42,7 +42,8 @@
                         <div class="button-group">
                             <!-- 编辑按钮 -->
                             <el-button v-if="hoverIndex === index && editIndex !== index"
-                                @click="startEditing(index, item)" type="primary" size="small" class="edit-btn">编辑
+                                @click="startEditing(index, item)" type="primary" size="small" class="edit-btn">
+                                编辑
                             </el-button>
 
                             <!-- 确认和取消按钮 -->
@@ -69,7 +70,7 @@
 
 
 <script setup>
-import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
 
 import * as echarts from 'echarts'
 
@@ -106,13 +107,38 @@ let nodeForm = ref({
 })
 
 const isSidebarVisible = ref(false); // 控制侧边栏显示状态
-const items = ref(['数据1', '数据2', '数据3']); // 示例数据
 const hoverIndex = ref(null); // 悬停的索引
 const editIndex = ref(null); // 当前编辑的索引
 const editedValue = ref(''); // 当前编辑的值
 
-const personSidebarList = ref(['名称', '性别', '年龄', '出生地', '出生日期', '身份证号', '描述'])
+const personSidebarList = ref(['名称', '性别', '年龄', '出生地', '身份证号', '描述'])
 const entitySidebarList = ref(['名称', '描述'])
+
+
+// 显示的值列表
+const items = computed(() => [
+    personData.value.name,
+    personData.value.gender,
+    personData.value.age,
+    personData.value.birthplace,
+    personData.value.idCard,
+    personData.value.description
+]);
+
+// 示例数据对象
+const personData = ref({
+    id: null,
+    groupId: null,
+    nodeType: "",
+    role: null,
+    name: "",
+    age: null,
+    gender: "",
+    birthplace: "",
+    idCard: "",
+    description: "",
+    exist: true
+});
 
 
 // 关闭侧边栏
@@ -186,6 +212,7 @@ const handleChartClick = (params) => {
 
 
     Object.assign(nodeForm.value, node)
+    Object.assign(personData.value, node)
 
     if (params.dataType === 'node') {
         isSidebarVisible.value = true
