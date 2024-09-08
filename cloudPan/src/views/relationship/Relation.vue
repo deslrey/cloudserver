@@ -59,6 +59,11 @@
                     </div>
                 </li>
             </ul>
+            <!-- 底部按钮区域 -->
+            <div class="footer-buttons">
+                <el-button @click="handleCancel" type="default" size="large">取消</el-button>
+                <el-button @click="handleConfirm" type="primary" size="large">确认</el-button>
+            </div>
         </el-drawer>
 
         <!-- 物品节点侧边栏 -->
@@ -588,6 +593,20 @@ function resizeChart() {
     margin-bottom: 0 !important;
     /* 强制去掉默认的 margin */
 }
+
+.footer-buttons {
+    display: flex;
+    justify-content: center;
+    /* 水平居中 */
+    gap: 20px;
+    /* 按钮之间的间距 */
+    position: absolute;
+    bottom: 20px;
+    /* 距离底部的距离 */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 
 
 
