@@ -83,21 +83,21 @@ const api = {
     getOptions: '/groups/getOptions',
     getGroupRela: '/relationships/getGroupRela',
     getAllData: '/groupMembers/getAllData',
-    updateNodeData: '/groupMembers/updateNodeData'
+    updateNodeData: '/relationships/updateNodeData',
 }
 const { proxy } = getCurrentInstance();
-let main = ref(null)
-let value = ref(null)
-let searchName = ref('')
-let idCard = ref('')
-let options = ref([])
-let graphData = ref([])
-let linksData = ref([])
-let noData = ref(true)
-let vagueSearch = ref(false)
+const main = ref(null)
+const value = ref(null)
+const searchName = ref('')
+const idCard = ref('')
+const options = ref([])
+const graphData = ref([])
+const linksData = ref([])
+const noData = ref(true)
+const vagueSearch = ref(false)
 
 const nodeColor = ref('#FF0000')
-let nodeForm = ref({
+const nodeForm = ref({
     id: null,
     groupId: null,
     nodeType: '',
@@ -111,42 +111,8 @@ let nodeForm = ref({
     exist: false
 })
 
-const isSidebarVisible = ref(false); // 控制侧边栏显示状态
-const hoverIndex = ref(null); // 悬停的索引
-const editIndex = ref(null); // 当前编辑的索引
-const editedValue = ref(''); // 当前编辑的值
-
-const personSidebarList = ref(['名称', '性别', '年龄', '出生地', '身份证号', '描述'])
-const entitySidebarList = ref(['名称', '描述'])
-
-
-// 显示的值列表
-const items = computed(() => [
-    personData.value.name,
-    personData.value.gender,
-    personData.value.age,
-    personData.value.birthplace,
-    personData.value.idCard,
-    personData.value.description
-]);
-
-// 示例数据对象
-const personData = ref({
-    id: null,
-    groupId: null,
-    nodeType: "",
-    role: null,
-    name: "",
-    age: null,
-    gender: "",
-    birthplace: "",
-    idCard: "",
-    description: "",
-    exist: true
-});
-
 // 保存初始状态
-const initialPersonData = {
+const initialNodeData = {
     id: null,
     groupId: null,
     nodeType: "",
@@ -160,8 +126,27 @@ const initialPersonData = {
     exist: true
 };
 
+const isSidebarVisible = ref(false); // 控制侧边栏显示状态
+const hoverIndex = ref(null); // 悬停的索引
+const editIndex = ref(null); // 当前编辑的索引
+const editedValue = ref(''); // 当前编辑的值
 
-// 取消操作：重置 personData 为初始状态
+const personSidebarList = ref(['名称', '性别', '年龄', '出生地', '身份证号', '描述'])
+const entitySidebarList = ref(['名称', '描述'])
+
+
+// 显示的值列表
+const items = computed(() => [
+    nodeForm.value.name,
+    nodeForm.value.gender,
+    nodeForm.value.age,
+    nodeForm.value.birthplace,
+    nodeForm.value.idCard,
+    nodeForm.value.description
+])
+
+
+// 取消操作：重置 nodeForm 为初始状态
 const handleCancel = () => {
     handleClose();
 };
@@ -178,7 +163,7 @@ const handleClose = () => {
     // 清空编辑状态
     editIndex.value = null;
     editedValue.value = '';
-    Object.assign(personData.value, initialPersonData);
+    Object.assign(nodeForm.value, initialNodeData);
 };
 
 
@@ -244,7 +229,6 @@ const handleChartClick = (params) => {
 
 
     Object.assign(nodeForm.value, node)
-    Object.assign(personData.value, node)
 
     if (params.dataType === 'node') {
         isSidebarVisible.value = true
