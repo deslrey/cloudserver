@@ -23,7 +23,8 @@
         </div>
 
         <!-- 人物节点侧边栏 -->
-        <el-drawer v-model="isSidebarVisible" direction="rtl" size="35%" :wrapper-closable="false" @close="handleClose">
+        <el-drawer v-model="isSidebarVisible" direction="rtl" size="35%" :wrapper-closable="false" @close="handleClose"
+            :with-header="false">
             <h2 class="node-sidebar-title">节点信息</h2>
             <ul class="sidebar-list">
                 <li v-for="(item, index) in items" :key="index" @mouseover="hoverIndex = index"
@@ -59,14 +60,13 @@
                     </div>
                 </li>
             </ul>
+
             <!-- 底部按钮区域 -->
             <div class="footer-buttons">
                 <el-button @click="handleCancel" type="default" size="large">取消</el-button>
                 <el-button @click="handleConfirm" type="primary" size="large">确认</el-button>
             </div>
         </el-drawer>
-
-        <!-- 物品节点侧边栏 -->
 
 
 
@@ -145,6 +145,32 @@ const personData = ref({
     exist: true
 });
 
+// 保存初始状态
+const initialPersonData = {
+    id: null,
+    groupId: null,
+    nodeType: "",
+    role: null,
+    name: "",
+    age: null,
+    gender: "",
+    birthplace: "",
+    idCard: "",
+    description: "",
+    exist: true
+};
+
+
+// 取消操作：重置 personData 为初始状态
+const handleCancel = () => {
+    handleClose();
+};
+
+// 确认操作
+const handleConfirm = () => {
+    // 确认逻辑的实现
+    console.log('确认操作');
+};
 
 // 关闭侧边栏
 const handleClose = () => {
@@ -152,6 +178,7 @@ const handleClose = () => {
     // 清空编辑状态
     editIndex.value = null;
     editedValue.value = '';
+    Object.assign(personData.value, initialPersonData);
 };
 
 
