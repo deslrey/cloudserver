@@ -96,6 +96,8 @@ const linksData = ref([])
 const noData = ref(true)
 const vagueSearch = ref(false)
 
+const changeSidebarData = ref(false)
+
 const nodeColor = ref('#FF0000')
 const nodeForm = ref({
     id: null,
@@ -154,6 +156,10 @@ const handleCancel = () => {
 // 确认操作
 const handleConfirm = () => {
     // 确认逻辑的实现
+
+    console.log('data ------> ', items.value);
+    console.log('changeSidebarData ------> ', changeSidebarData.value);
+
     console.log('确认操作');
 };
 
@@ -163,6 +169,7 @@ const handleClose = () => {
     // 清空编辑状态
     editIndex.value = null;
     editedValue.value = '';
+    changeSidebarData.value = false
     Object.assign(nodeForm.value, initialNodeData);
 };
 
@@ -175,14 +182,21 @@ const startEditing = (index, value) => {
 
 // 确认编辑
 const confirmEdit = (index) => {
-    items.value[index] = editedValue.value;
-    editIndex.value = null;
+
+    console.log('items ------ > ', items.value[index]);
+    console.log('editedValue ------ > ', editedValue.value);
+
+
+    items.value[index] = editedValue.value
+    editIndex.value = null
+    changeSidebarData.value = true
 };
 
 // 取消编辑
 const cancelEdit = () => {
     editIndex.value = null;
     editedValue.value = '';
+    changeSidebarData.value = false
 };
 
 const getOptions = async () => {
@@ -216,7 +230,7 @@ const categories = [
 const handleChartClick = (params) => {
     const data = params.data
 
-    console.log("节点数据 ------> ", data);  // Add this line to check if the event triggers
+    // console.log("节点数据 ------> ", data);  // Add this line to check if the event triggers
 
     if (!nodeDataMap.has(data.id)) {
         proxy.Message.error("当前查看节点数据存在异常");
@@ -225,7 +239,7 @@ const handleChartClick = (params) => {
 
     let node = nodeDataMap.get(data.id);
 
-    console.log('node ------> ', node);
+    // console.log('node ------> ', node);
 
 
     Object.assign(nodeForm.value, node)
@@ -274,7 +288,7 @@ const getAllData = async (groupId) => {
         }
     })
 
-    console.log('map ------> ', nodeDataMap);
+    // console.log('map ------> ', nodeDataMap);
 
 }
 
