@@ -134,7 +134,6 @@ const editIndex = ref(null); // 当前编辑的索引
 const editedValue = ref(''); // 当前编辑的值
 
 const personSidebarList = ref(['名称', '性别', '年龄', '出生地', '身份证号', '描述'])
-const entitySidebarList = ref(['名称', '描述'])
 
 
 // 显示的值列表
@@ -154,13 +153,42 @@ const handleCancel = () => {
 };
 
 // 确认操作
-const handleConfirm = () => {
-    // 确认逻辑的实现
+const handleConfirm = async () => {
+    if (!changeSidebarData.value) {
+        //  如果节点信息未编辑,点击确认之后不会提请求,直接返回
+        console.log('节点信息未编辑');
+        handleClose()
+        return
+    }
 
-    console.log('data ------> ', items.value);
-    console.log('changeSidebarData ------> ', changeSidebarData.value);
+    // 节点信息存在编辑过
+    const groupIdSidebar = nodeForm.value.groupId
+    const itemArrays = items.value
+    nodeForm.value.name = itemArrays[0]
+    nodeForm.value.gender = itemArrays[1]
+    nodeForm.value.age = itemArrays[2]
+    nodeForm.value.birthplace = itemArrays[3]
+    nodeForm.value.idCard = itemArrays[4]
+    nodeForm.value.description = itemArrays[5]
 
-    console.log('确认操作');
+    console.log('nodeForm ------> ', nodeForm.value);
+
+    const result = await proxy.Request({
+        url: api.updateNodeData,
+        showLoading: true,
+        params: nodeForm.value
+    })
+
+    if (result.code !== 200) {
+        proxy.Message.error('节点信息更新失败,请重试')
+        handleClose()
+        return
+    }
+    proxy.Message.success('节点信息更新成功')
+    handleClose()
+    // 重新加载节点关系数据
+    getAllData(groupIdSidebar)
+
 };
 
 // 关闭侧边栏
@@ -170,6 +198,7 @@ const handleClose = () => {
     editIndex.value = null;
     editedValue.value = '';
     changeSidebarData.value = false
+    // 重置 nodeForm 为初始状态
     Object.assign(nodeForm.value, initialNodeData);
 };
 
@@ -182,10 +211,6 @@ const startEditing = (index, value) => {
 
 // 确认编辑
 const confirmEdit = (index) => {
-
-    console.log('items ------ > ', items.value[index]);
-    console.log('editedValue ------ > ', editedValue.value);
-
     items.value[index] = editedValue.value
     editIndex.value = null
     changeSidebarData.value = true
@@ -238,6 +263,8 @@ const handleChartClick = (params) => {
             return
         }
         let node = nodeDataMap.get(data.id);
+        console.log('node ------> ', node);
+
         // console.log('node ------> ', node);
         Object.assign(nodeForm.value, node)
         isSidebarVisible.value = true
@@ -269,7 +296,7 @@ const getAllData = async (groupId) => {
         let id = `${person.id}-${person.nodeType}`
         if (!nodeDataMap.has(id)) {
             nodeDataMap.set(id, {
-                ...person
+                ...person, groupId: groupId
             })
         }
     })
@@ -278,12 +305,12 @@ const getAllData = async (groupId) => {
         let id = `${entity.id}-${entity.nodeType}`
         if (!nodeDataMap.has(id)) {
             nodeDataMap.set(id, {
-                ...entity
+                ...entity, groupId: groupId
             })
         }
     })
 
-    // console.log('map ------> ', nodeDataMap);
+    // console.log('map ------> ', nodeDataMap)
 
 }
 
