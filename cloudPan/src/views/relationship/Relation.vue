@@ -186,7 +186,6 @@ const confirmEdit = (index) => {
     console.log('items ------ > ', items.value[index]);
     console.log('editedValue ------ > ', editedValue.value);
 
-
     items.value[index] = editedValue.value
     editIndex.value = null
     changeSidebarData.value = true
@@ -229,27 +228,23 @@ const categories = [
 
 const handleChartClick = (params) => {
     const data = params.data
+    const dataType = params.dataType
 
     // console.log("节点数据 ------> ", data);  // Add this line to check if the event triggers
 
-    if (!nodeDataMap.has(data.id)) {
-        proxy.Message.error("当前查看节点数据存在异常");
-        return
-    }
-
-    let node = nodeDataMap.get(data.id);
-
-    // console.log('node ------> ', node);
-
-
-    Object.assign(nodeForm.value, node)
-
-    if (params.dataType === 'node') {
+    if (dataType === 'node') {
+        if (!nodeDataMap.has(data.id)) {
+            proxy.Message.error("当前查看节点数据存在异常");
+            return
+        }
+        let node = nodeDataMap.get(data.id);
+        // console.log('node ------> ', node);
+        Object.assign(nodeForm.value, node)
         isSidebarVisible.value = true
-        // alert(`节点: ${params.data.name}`)
-    } else if (params.dataType === 'edge') {
-        alert(`关系线: ${params.data.name}`)
+    } else if (dataType === 'edge') {
+        proxy.Message.success(`${data.name}`)
     }
+
 }
 
 let myChart = null
