@@ -2,8 +2,8 @@
     <div class="container">
 
         <div class="form-container">
-            <el-select v-model="value" filterable placeholder="选择班级" class="select-box" allow-create clearable>
-                <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item" />
+            <el-select v-model="optionValue" filterable placeholder="选择班级" class="select-box" allow-create clearable>
+                <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
             <el-input v-model="searchName" placeholder="请输入查询名称" class="input-box" clearable />
             <el-input v-model="idCard" placeholder="请输入身份证号" class="input-box" clearable />
@@ -87,7 +87,7 @@ const api = {
 }
 const { proxy } = getCurrentInstance();
 const main = ref(null)
-const value = ref(null)
+const optionValue = ref(null)
 const searchName = ref('')
 const idCard = ref('')
 const options = ref([])
@@ -156,7 +156,6 @@ const handleCancel = () => {
 const handleConfirm = async () => {
     if (!changeSidebarData.value) {
         //  如果节点信息未编辑,点击确认之后不会提请求,直接返回
-        console.log('节点信息未编辑');
         handleClose()
         return
     }
@@ -234,17 +233,18 @@ const getOptions = async () => {
         return
     }
     options.value = result.data
+
 }
 getOptions()
 
 const handleSubmit = () => {
-    if (!value.value) {
+    if (!optionValue.value) {
         proxy.Message.warning('请选择一个选项')
         return
     }
 
-    getGroupRela(value.value.id)
-    getAllData(value.value.id)
+    getGroupRela(optionValue.value)
+    getAllData(optionValue.value)
 }
 
 const categories = [
@@ -411,7 +411,7 @@ const updateChart = () => {
 
     const option = {
         title: {
-            text: `${value.value.name} - 关系图`
+            text: `${optionValue.value.name} - 关系图`
         },
         tooltip: {
             formatter: function (x) {
