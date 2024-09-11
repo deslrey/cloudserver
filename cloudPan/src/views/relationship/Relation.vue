@@ -171,7 +171,7 @@ const handleConfirm = async () => {
     nodeForm.value.idCard = itemArrays[4]
     nodeForm.value.description = itemArrays[5]
 
-    console.log('nodeForm ------> ', nodeForm.value);
+    // console.log('nodeForm ------> ', nodeForm.value);
 
     const result = await proxy.Request({
         url: api.updateNodeData,
@@ -264,7 +264,6 @@ const handleChartClick = (params) => {
             return
         }
         let node = nodeDataMap.get(data.id);
-        console.log('node ------> ', node);
 
         // console.log('node ------> ', node);
         Object.assign(nodeForm.value, node)
