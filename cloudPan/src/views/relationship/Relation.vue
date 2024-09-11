@@ -187,6 +187,7 @@ const handleConfirm = async () => {
     proxy.Message.success('节点信息更新成功')
     handleClose()
     // 重新加载节点关系数据
+    nodeDataMap.clear()
     getAllData(groupIdSidebar)
 
 };
