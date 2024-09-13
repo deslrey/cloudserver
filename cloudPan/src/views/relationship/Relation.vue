@@ -314,23 +314,22 @@ const getAllData = async (groupId) => {
 
 }
 
-const getGroupRela = async (groupId) => {
-    const result = await proxy.Request({
-        url: api.getGroupRela,
-        showLoading: true,
-        params: { groupId: groupId }
-    })
 
-    if (!result || !result.data) {
+// 模糊查找
+const getVagueGroupRela = (groupId) => {
+
+    const result = getGroupRelaDate(groupId);
+    if (!result) {
         noData.value = true
         return
     }
+    console.log('result ------> ', result);
 
     const nodes = []
     const links = []
     const nodeMap = new Map()
 
-    result.data.forEach(item => {
+    result.forEach(item => {
         const startNodeId = `${item.startId}-${item.startType}`
         const endNodeId = `${item.endId}-${item.endType}`
         let highlightNode = false
@@ -392,6 +391,8 @@ const getGroupRela = async (groupId) => {
         nodes.push(node)
     })
 
+    // console.log('map ------> ',nodeMap);
+
     graphData.value = nodes
     linksData.value = links
 
@@ -403,6 +404,130 @@ const getGroupRela = async (groupId) => {
         }
         updateChart()
     })
+
+}
+
+// 精准查找
+const getPrecisionGroupRela = (groupId) => {
+    const result = getGroupRelaDate(groupId);
+    if (!result) {
+        noData.value = true
+        return
+    }
+    console.log('result ------> ', result);
+
+
+    const nodes = []
+    const links = []
+    const nodeMap = new Map()
+
+    result.forEach(item => {
+        const startNodeId = `${item.startId}-${item.startType}`
+        const endNodeId = `${item.endId}-${item.endType}`
+        let highlightNode = false
+        let highlightArrow = false
+        if (searchName.value != '') {
+            highlightNode = item.startName === searchName.value ? false : true
+            if (highlightNode) {
+                highlightArrow = true
+            }
+        }
+
+        if (!nodeMap.has(startNodeId)) {
+            nodeMap.set(startNodeId, {
+                id: startNodeId,
+                relationId: item.relationId,
+                name: item.startName,
+                des: `${item.startName}(${item.startType})`,
+                symbolSize: 50,
+                category: item.startType === 'person' ? 0 : 1,
+                itemStyle: {
+                    color: highlightNode ? nodeColor : null
+                }
+            })
+        }
+        highlightNode = false
+        if (searchName.value != '') {
+            highlightNode = item.endName === searchName.value ? false : true
+            if (highlightNode) {
+                highlightArrow = true
+            }
+        }
+        if (!nodeMap.has(endNodeId)) {
+            nodeMap.set(endNodeId, {
+                id: endNodeId,
+                relationId: item.relationId,
+                name: item.endName,
+                des: `${item.endName}(${item.endType})`,
+                symbolSize: 50,
+                category: item.endType === 'person' ? 0 : 1,
+                itemStyle: {
+                    color: highlightNode ? nodeColor : null
+                }
+            })
+        }
+        links.push({
+            source: startNodeId,
+            target: endNodeId,
+            name: item.information,
+            des: item.information,
+            lineStyle: { color: '#4b565b' },
+            symbol: item.information.includes('好友') ? ['none', 'arrow'] : ['none', 'none'],
+            lineStyle: {
+                color: highlightArrow ? nodeColor : null
+            }
+        })
+    })
+
+    nodeMap.forEach(node => {
+        nodes.push(node)
+    })
+
+    // console.log('map ------> ',nodeMap);
+
+    graphData.value = nodes
+    linksData.value = links
+
+    noData.value = nodes.length === 0 && links.length === 0
+
+    nextTick(() => {
+        if (!myChart) {
+            myChart = echarts.init(main.value)
+        }
+        updateChart()
+    })
+
+}
+
+
+const getGroupRelaDate =  (groupId) => {
+
+    const result =  proxy.Request({
+        url: api.getGroupRela,
+        showLoading: true,
+        params: { groupId: groupId }
+    })
+
+    console.log('result ------> ', result);
+    if (!result || !result.data) {
+        noData.value = true
+        return null
+    }
+
+    console.log('getGroupRelaDate ------> ', result);
+    return result.data
+}
+
+
+
+const getGroupRela = (groupId) => {
+
+    if (vagueSearch.value) {
+        getVagueGroupRela(groupId)
+    } else {
+        getPrecisionGroupRela(groupId)
+    }
+
 }
 
 
