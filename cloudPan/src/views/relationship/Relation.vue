@@ -316,9 +316,9 @@ const getAllData = async (groupId) => {
 
 
 // 模糊查找
-const getVagueGroupRela = (groupId) => {
+const getVagueGroupRela = async (groupId) => {
 
-    const result = getGroupRelaDate(groupId);
+    const result = await getGroupRelaDate(groupId);
     if (!result) {
         noData.value = true
         return
@@ -408,8 +408,8 @@ const getVagueGroupRela = (groupId) => {
 }
 
 // 精准查找
-const getPrecisionGroupRela = (groupId) => {
-    const result = getGroupRelaDate(groupId);
+const getPrecisionGroupRela = async (groupId) => {
+    const result = await getGroupRelaDate(groupId);
     if (!result) {
         noData.value = true
         return
@@ -427,7 +427,7 @@ const getPrecisionGroupRela = (groupId) => {
         let highlightNode = false
         let highlightArrow = false
         if (searchName.value != '') {
-            highlightNode = item.startName === searchName.value ? false : true
+            highlightNode = item.startName === searchName.value ? true : false
             if (highlightNode) {
                 highlightArrow = true
             }
@@ -448,7 +448,7 @@ const getPrecisionGroupRela = (groupId) => {
         }
         highlightNode = false
         if (searchName.value != '') {
-            highlightNode = item.endName === searchName.value ? false : true
+            highlightNode = item.endName === searchName.value ? true : false
             if (highlightNode) {
                 highlightArrow = true
             }
@@ -499,25 +499,29 @@ const getPrecisionGroupRela = (groupId) => {
 
 }
 
-
-const getGroupRelaDate =  (groupId) => {
-
-    const result =  proxy.Request({
+const getGroupRelaDate = (groupId) => {
+    // 处理 Promise，获取结果
+    return proxy.Request({
         url: api.getGroupRela,
         showLoading: true,
         params: { groupId: groupId }
-    })
+    }).then(result => {
+        console.log('result ------> ', result);
 
-    console.log('result ------> ', result);
-    if (!result || !result.data) {
-        noData.value = true
-        return null
-    }
+        // 检查数据是否存在
+        if (!result || !result.data) {
+            noData.value = true;
+            return null;
+        }
 
-    console.log('getGroupRelaDate ------> ', result);
-    return result.data
-}
-
+        console.log('getGroupRelaDate ------> ', result);
+        return result.data; // 返回数据
+    }).catch(error => {
+        console.error('请求失败：', error);
+        noData.value = true; // 请求失败时的处理
+        return null;
+    });
+};
 
 
 const getGroupRela = (groupId) => {
