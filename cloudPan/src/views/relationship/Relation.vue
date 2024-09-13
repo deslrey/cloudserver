@@ -315,32 +315,38 @@ const getAllData = async (groupId) => {
 }
 
 
-// 模糊查找
-const getVagueGroupRela = async (groupId) => {
-
+// 公共处理函数
+const processGroupRelaData = async (groupId, isVagueSearch = true) => {
     const result = await getGroupRelaDate(groupId);
     if (!result) {
-        noData.value = true
-        return
+        noData.value = true;
+        return;
     }
-    console.log('result ------> ', result);
 
-    const nodes = []
-    const links = []
-    const nodeMap = new Map()
+    const nodes = [];
+    const links = [];
+    const nodeMap = new Map();
 
     result.forEach(item => {
-        const startNodeId = `${item.startId}-${item.startType}`
-        const endNodeId = `${item.endId}-${item.endType}`
-        let highlightNode = false
-        let highlightArrow = false
-        if (searchName.value != '') {
-            highlightNode = item.startName.indexOf(searchName.value) == -1 ? false : true
-            if (highlightNode) {
-                highlightArrow = true
-            }
+        const startNodeId = `${item.startId}-${item.startType}`;
+        const endNodeId = `${item.endId}-${item.endType}`;
+        let highlightNode = false;
+        let highlightArrow = false;
+
+        // 模糊或精准匹配
+        const matchStart = isVagueSearch
+            ? item.startName.includes(searchName.value)
+            : item.startName === searchName.value;
+        const matchEnd = isVagueSearch
+            ? item.endName.includes(searchName.value)
+            : item.endName === searchName.value;
+
+        if (searchName.value !== '') {
+            highlightNode = matchStart;
+            highlightArrow = matchStart || matchEnd;
         }
 
+        // 添加或更新起始节点
         if (!nodeMap.has(startNodeId)) {
             nodeMap.set(startNodeId, {
                 id: startNodeId,
@@ -350,17 +356,19 @@ const getVagueGroupRela = async (groupId) => {
                 symbolSize: 50,
                 category: item.startType === 'person' ? 0 : 1,
                 itemStyle: {
-                    color: highlightNode ? nodeColor : null
+                    color: matchStart ? nodeColor : null
                 }
-            })
+            });
         }
-        highlightNode = false
-        if (searchName.value != '') {
-            highlightNode = item.endName.indexOf(searchName.value) == -1 ? false : true
-            if (highlightNode) {
-                highlightArrow = true
-            }
+
+        highlightNode = false; // 重置高亮状态
+
+        if (searchName.value !== '') {
+            highlightNode = matchEnd;
+            highlightArrow = highlightArrow || highlightNode;
         }
+
+        // 添加或更新结束节点
         if (!nodeMap.has(endNodeId)) {
             nodeMap.set(endNodeId, {
                 id: endNodeId,
@@ -370,134 +378,51 @@ const getVagueGroupRela = async (groupId) => {
                 symbolSize: 50,
                 category: item.endType === 'person' ? 0 : 1,
                 itemStyle: {
-                    color: highlightNode ? nodeColor : null
+                    color: matchEnd ? nodeColor : null
                 }
-            })
+            });
         }
+
+        // 添加链接
         links.push({
             source: startNodeId,
             target: endNodeId,
             name: item.information,
             des: item.information,
-            lineStyle: { color: '#4b565b' },
             symbol: item.information.includes('好友') ? ['none', 'arrow'] : ['none', 'none'],
             lineStyle: {
-                color: highlightArrow ? nodeColor : null
+                color: highlightArrow ? nodeColor : '#4b565b'
             }
-        })
-    })
+        });
+    });
 
+    // 将 Map 转换为数组
     nodeMap.forEach(node => {
-        nodes.push(node)
-    })
+        nodes.push(node);
+    });
 
-    // console.log('map ------> ',nodeMap);
+    graphData.value = nodes;
+    linksData.value = links;
 
-    graphData.value = nodes
-    linksData.value = links
-
-    noData.value = nodes.length === 0 && links.length === 0
+    noData.value = nodes.length === 0 && links.length === 0;
 
     nextTick(() => {
         if (!myChart) {
-            myChart = echarts.init(main.value)
+            myChart = echarts.init(main.value);
         }
-        updateChart()
-    })
+        updateChart();
+    });
+};
 
-}
+// 模糊查找
+const getVagueGroupRela = async (groupId) => {
+    await processGroupRelaData(groupId, true); // 调用公共函数，传入模糊查找标志
+};
 
 // 精准查找
 const getPrecisionGroupRela = async (groupId) => {
-    const result = await getGroupRelaDate(groupId);
-    if (!result) {
-        noData.value = true
-        return
-    }
-    console.log('result ------> ', result);
-
-
-    const nodes = []
-    const links = []
-    const nodeMap = new Map()
-
-    result.forEach(item => {
-        const startNodeId = `${item.startId}-${item.startType}`
-        const endNodeId = `${item.endId}-${item.endType}`
-        let highlightNode = false
-        let highlightArrow = false
-        if (searchName.value != '') {
-            highlightNode = item.startName === searchName.value ? true : false
-            if (highlightNode) {
-                highlightArrow = true
-            }
-        }
-
-        if (!nodeMap.has(startNodeId)) {
-            nodeMap.set(startNodeId, {
-                id: startNodeId,
-                relationId: item.relationId,
-                name: item.startName,
-                des: `${item.startName}(${item.startType})`,
-                symbolSize: 50,
-                category: item.startType === 'person' ? 0 : 1,
-                itemStyle: {
-                    color: highlightNode ? nodeColor : null
-                }
-            })
-        }
-        highlightNode = false
-        if (searchName.value != '') {
-            highlightNode = item.endName === searchName.value ? true : false
-            if (highlightNode) {
-                highlightArrow = true
-            }
-        }
-        if (!nodeMap.has(endNodeId)) {
-            nodeMap.set(endNodeId, {
-                id: endNodeId,
-                relationId: item.relationId,
-                name: item.endName,
-                des: `${item.endName}(${item.endType})`,
-                symbolSize: 50,
-                category: item.endType === 'person' ? 0 : 1,
-                itemStyle: {
-                    color: highlightNode ? nodeColor : null
-                }
-            })
-        }
-        links.push({
-            source: startNodeId,
-            target: endNodeId,
-            name: item.information,
-            des: item.information,
-            lineStyle: { color: '#4b565b' },
-            symbol: item.information.includes('好友') ? ['none', 'arrow'] : ['none', 'none'],
-            lineStyle: {
-                color: highlightArrow ? nodeColor : null
-            }
-        })
-    })
-
-    nodeMap.forEach(node => {
-        nodes.push(node)
-    })
-
-    // console.log('map ------> ',nodeMap);
-
-    graphData.value = nodes
-    linksData.value = links
-
-    noData.value = nodes.length === 0 && links.length === 0
-
-    nextTick(() => {
-        if (!myChart) {
-            myChart = echarts.init(main.value)
-        }
-        updateChart()
-    })
-
-}
+    await processGroupRelaData(groupId, false); // 调用公共函数，传入精准查找标志
+};
 
 const getGroupRelaDate = (groupId) => {
     // 处理 Promise，获取结果
