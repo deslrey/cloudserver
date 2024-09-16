@@ -242,9 +242,13 @@ const handleSubmit = () => {
         proxy.Message.warning('请选择一个选项')
         return
     }
+    getAllData(optionValue.value)
+
+    console.log('节点 ------> ', nodeDataMap);
+
 
     getGroupRela(optionValue.value)
-    getAllData(optionValue.value)
+
 }
 
 const categories = [
@@ -327,19 +331,28 @@ const processGroupRelaData = async (groupId, isVagueSearch = true) => {
     const links = [];
     const nodeMap = new Map();
 
+    console.log('身份证------> ', idCard.value);
+
+    console.log('result ------> ', result);
+
+
     result.forEach(item => {
         const startNodeId = `${item.startId}-${item.startType}`;
         const endNodeId = `${item.endId}-${item.endType}`;
         let highlightNode = false;
         let highlightArrow = false;
 
+        const startNodeIdMap = nodeDataMap.get(startNodeId)
+        const endNodeIdMap = nodeDataMap.get(endNodeId)
+
+
         // 模糊或精准匹配
         const matchStart = isVagueSearch
             ? item.startName.includes(searchName.value)
-            : item.startName === searchName.value;
+            : (item.startName === searchName.value || item.idCard === idCard.value);
         const matchEnd = isVagueSearch
             ? item.endName.includes(searchName.value)
-            : item.endName === searchName.value;
+            : (item.endName === searchName.value || item.idCard === idCard.value);
 
         if (searchName.value !== '') {
             highlightNode = matchStart;
@@ -431,7 +444,6 @@ const getGroupRelaDate = (groupId) => {
         showLoading: true,
         params: { groupId: groupId }
     }).then(result => {
-        console.log('result ------> ', result);
 
         // 检查数据是否存在
         if (!result || !result.data) {
@@ -439,7 +451,6 @@ const getGroupRelaDate = (groupId) => {
             return null;
         }
 
-        console.log('getGroupRelaDate ------> ', result);
         return result.data; // 返回数据
     }).catch(error => {
         console.error('请求失败：', error);
