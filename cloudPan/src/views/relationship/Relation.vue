@@ -477,10 +477,11 @@ const getGroupRela = (groupId) => {
 
 const updateChart = () => {
     if (!myChart || noData.value) return
+    const dataOptions = options.value.find(item => item.id === optionValue.value)
 
     const option = {
         title: {
-            text: `${optionValue.value.name} - 关系图`
+            text: `${dataOptions.name} - 关系图`
         },
         tooltip: {
             formatter: function (x) {
