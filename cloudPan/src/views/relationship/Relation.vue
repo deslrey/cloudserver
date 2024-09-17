@@ -327,34 +327,41 @@ const processGroupRelaData = async (groupId, isVagueSearch = true) => {
         return;
     }
 
-    const nodes = [];
-    const links = [];
-    const nodeMap = new Map();
-
-    console.log('身份证------> ', idCard.value);
-
-    console.log('result ------> ', result);
-
+    let nodes = [];
+    let links = [];
+    let nodeMap = new Map();
 
     result.forEach(item => {
         const startNodeId = `${item.startId}-${item.startType}`;
         const endNodeId = `${item.endId}-${item.endType}`;
+
+        const startNodeBool = startNodeId.includes('person');
+        const endNodeBool = endNodeId.includes('person');
+
+        const startNodeIdMap = startNodeBool ? nodeDataMap.get(startNodeId) : null;
+        const endNodeIdMap = endNodeBool ? nodeDataMap.get(endNodeId) : null;
+
+        // 检查 searchName 和 idCard 是否为空
+        const hasValidSearchName = searchName.value && searchName.value.trim() !== '';
+        const hasValidIdCard = idCard.value && idCard.value.trim() !== '';
+
+        // 模糊或精准匹配，添加对空值的检查
+        const matchStart = isVagueSearch
+            ? (hasValidSearchName && item.startName.includes(searchName.value)) ||
+            (startNodeBool && hasValidIdCard && String(startNodeIdMap?.idCard).includes(idCard.value))
+            : (hasValidSearchName && item.startName === searchName.value) &&
+            (startNodeBool && hasValidIdCard && startNodeIdMap?.idCard === idCard.value);
+
+        const matchEnd = isVagueSearch
+            ? (hasValidSearchName && item.endName.includes(searchName.value)) ||
+            (endNodeBool && hasValidIdCard && String(endNodeIdMap?.idCard).includes(idCard.value))
+            : (hasValidSearchName && item.endName === searchName.value) &&
+            (endNodeBool && hasValidIdCard && endNodeIdMap?.idCard === idCard.value);
+
         let highlightNode = false;
         let highlightArrow = false;
 
-        const startNodeIdMap = nodeDataMap.get(startNodeId)
-        const endNodeIdMap = nodeDataMap.get(endNodeId)
-
-
-        // 模糊或精准匹配
-        const matchStart = isVagueSearch
-            ? item.startName.includes(searchName.value)
-            : (item.startName === searchName.value || item.idCard === idCard.value);
-        const matchEnd = isVagueSearch
-            ? item.endName.includes(searchName.value)
-            : (item.endName === searchName.value || item.idCard === idCard.value);
-
-        if (searchName.value !== '') {
+        if (hasValidSearchName) {
             highlightNode = matchStart;
             highlightArrow = matchStart || matchEnd;
         }
@@ -367,16 +374,14 @@ const processGroupRelaData = async (groupId, isVagueSearch = true) => {
                 name: item.startName,
                 des: `${item.startName}(${item.startType})`,
                 symbolSize: 50,
-                category: item.startType === 'person' ? 0 : 1,
+                category: startNodeBool ? 0 : 1,
                 itemStyle: {
                     color: matchStart ? nodeColor : null
                 }
             });
         }
 
-        highlightNode = false; // 重置高亮状态
-
-        if (searchName.value !== '') {
+        if (hasValidSearchName) {
             highlightNode = matchEnd;
             highlightArrow = highlightArrow || highlightNode;
         }
@@ -389,7 +394,7 @@ const processGroupRelaData = async (groupId, isVagueSearch = true) => {
                 name: item.endName,
                 des: `${item.endName}(${item.endType})`,
                 symbolSize: 50,
-                category: item.endType === 'person' ? 0 : 1,
+                category: endNodeBool ? 0 : 1,
                 itemStyle: {
                     color: matchEnd ? nodeColor : null
                 }
@@ -410,9 +415,7 @@ const processGroupRelaData = async (groupId, isVagueSearch = true) => {
     });
 
     // 将 Map 转换为数组
-    nodeMap.forEach(node => {
-        nodes.push(node);
-    });
+    nodes = Array.from(nodeMap.values());
 
     graphData.value = nodes;
     linksData.value = links;
@@ -425,6 +428,7 @@ const processGroupRelaData = async (groupId, isVagueSearch = true) => {
         }
         updateChart();
     });
+
 };
 
 // 模糊查找
