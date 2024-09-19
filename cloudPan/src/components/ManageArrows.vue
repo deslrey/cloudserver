@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
 import { defineProps } from 'vue'
 
@@ -41,6 +41,12 @@ const props = defineProps({
     },
 })
 
+const { proxy } = getCurrentInstance()
+
+const api = {
+    getPageData: '/manageArrows/getPageData',
+}
+
 // 控制 Dialog 显示/隐藏
 const dialogVisible = ref(false)
 
@@ -50,6 +56,18 @@ const tableData = [
     { name: '李四', age: 30, address: '上海市' },
     { name: '王五', age: 28, address: '广州市' },
 ]
+
+const getPageData = async () => {
+    const result = await proxy.Request({
+        url: api.getPageData,
+        showLoading: true,
+    })
+
+    console.log('result ------> ', result.data.list);
+
+}
+
+getPageData()
 </script>
 
 <style scoped>
