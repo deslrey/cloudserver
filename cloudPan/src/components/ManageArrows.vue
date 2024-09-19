@@ -4,12 +4,14 @@
         <el-button :type="type" :icon="icon" @click="dialogVisible = true">{{ text }}</el-button>
 
         <!-- 弹出的展示栏 (Dialog) -->
-        <el-dialog title="数据展示" v-model="dialogVisible" width="50%" :modal="true" :center="true" :lock-scroll="false"
+        <el-dialog title="箭头数据管理" v-model="dialogVisible" width="50%" :modal="true" :center="true" :lock-scroll="false"
             append-to-body>
             <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="name" label="名称" />
-                <el-table-column prop="age" label="年龄" />
-                <el-table-column prop="address" label="地址" />
+                <el-table-column prop="arrowName" label="名称" />
+                <el-table-column prop="createUser" label="创建者" />
+                <el-table-column prop="createTime" label="创建日期" />
+                <el-table-column prop="updateTime" label="最近修改" />
+                <el-table-column prop="exist" label="是否启用"/>
             </el-table>
 
             <!-- Dialog 的 footer -->
@@ -51,11 +53,7 @@ const api = {
 const dialogVisible = ref(false)
 
 // 示例数据
-const tableData = [
-    { name: '张三', age: 25, address: '北京市' },
-    { name: '李四', age: 30, address: '上海市' },
-    { name: '王五', age: 28, address: '广州市' },
-]
+const tableData = ref([])
 
 const getPageData = async () => {
     const result = await proxy.Request({
@@ -64,6 +62,8 @@ const getPageData = async () => {
     })
 
     console.log('result ------> ', result.data.list);
+    tableData.value = result.data.list
+    console.log('tableData ------> ', tableData.value);
 
 }
 
