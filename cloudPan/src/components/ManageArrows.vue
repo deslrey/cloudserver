@@ -13,8 +13,17 @@
                 <el-table-column prop="arrowName" label="名称" />
                 <el-table-column prop="createUser" label="创建者" />
                 <el-table-column prop="createTime" label="创建日期" />
-                <el-table-column prop="updateTime" label="最近修改" />
-                <el-table-column prop="exist" label="是否启用" />
+                <el-table-column prop="updateTime" label="最近修改">
+                    <template #default="scope">
+                        <span>{{ scope.row.updateTime ? scope.row.updateTime : '暂无修改' }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="exist" label="是否启用">
+                    <template #default="scope">
+                        <span>{{ scope.row.exist ? '是' : '否' }}</span>
+                    </template>
+                </el-table-column>
+
             </el-table>
 
             <!-- 分页组件 -->
