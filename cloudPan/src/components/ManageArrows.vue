@@ -15,8 +15,8 @@
             <el-table :data="filteredTableData" style="width: 100%; margin-bottom: 20px;">
                 <el-table-column prop="arrowName" label="名称" />
                 <el-table-column prop="createUser" label="创建者" />
-                <el-table-column prop="createTime" label="创建日期" />
-                <el-table-column prop="updateTime" label="最近修改">
+                <el-table-column prop="createTime" label="创建日期" sortable />
+                <el-table-column prop="updateTime" label="最近修改" sortable>
                     <template #default="scope">
                         <span>{{ scope.row.updateTime ? scope.row.updateTime : '暂无修改' }}</span>
                     </template>
