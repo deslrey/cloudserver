@@ -59,10 +59,11 @@ const api = {
     updateArrowsData: '/manageArrows/updateArrowsData'
 }
 
-const expandButton = () => {
+const expandButton = async () => {
+    await getPageData()  // 等待数据加载完成
     dialogVisible.value = true
-    getPageData()
 }
+
 
 // 控制 Dialog 显示/隐藏
 const dialogVisible = ref(false)
@@ -85,9 +86,6 @@ const getPageData = async () => {
             pageSize: pageSize.value
         }
     })
-
-    console.log('page ------> ',result);
-    
     tableData.value = result.data.list
     total.value = result.data.totalCount
 }
@@ -105,15 +103,15 @@ const addArrowsData = async () => {
 
 const updateArrowsData = async () => {
 
-const result = await proxy.Request({
-    url: api.updateArrowsData,
-    showLoading: true,
-    params: {
+    const result = await proxy.Request({
+        url: api.updateArrowsData,
+        showLoading: true,
+        params: {
 
-    }
-})
+        }
+    })
 
-console.log('updateArrowsData ------> ', result);
+    console.log('updateArrowsData ------> ', result);
 
 }
 
