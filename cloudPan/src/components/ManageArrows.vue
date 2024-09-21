@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- 触发按钮 -->
-        <el-button :type="type" :icon="icon" @click="dialogVisible = true">{{ text }}</el-button>
+        <el-button :type="type" :icon="icon" @click="expandButton">{{ text }}</el-button>
 
         <!-- 弹出的展示栏 (Dialog) -->
         <el-dialog title="箭头数据管理" v-model="dialogVisible" width="50%" :modal="true" :center="true" :lock-scroll="false"
@@ -49,6 +49,26 @@ const { proxy } = getCurrentInstance()
 const api = {
     getPageData: '/manageArrows/getPageData',
     addArrowsData: '/manageArrows/addArrowsData',
+    updateArrowsData: '/manageArrows/updateArrowsData'
+
+}
+
+const expandButton = () => {
+    dialogVisible.value = true
+    getPageData()
+}
+
+const updateArrowsData = async () => {
+
+    const result = await proxy.Request({
+        url: api.updateArrowsData,
+        showLoading: true,
+        params: {
+
+        }
+    })
+
+    console.log('updateArrowsData ------> ', result);
 
 }
 
@@ -60,7 +80,7 @@ const addArrowsData = async () => {
         params: { arrowName: "钱" }
     })
 
-    console.log('result ------> ', result);
+    console.log('addArrowsData ------> ', result);
 }
 
 // 控制 Dialog 显示/隐藏
@@ -80,8 +100,6 @@ const getPageData = async () => {
     console.log('tableData ------> ', tableData.value);
 
 }
-
-getPageData()
 </script>
 
 <style scoped>
