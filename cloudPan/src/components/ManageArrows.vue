@@ -7,13 +7,21 @@
         <el-dialog title="箭头数据管理" v-model="dialogVisible" width="50%" :modal="true" :center="true" :lock-scroll="false"
             append-to-body>
             <el-button type="primary" @click="addArrowsData">添加</el-button>
-            <el-table :data="tableData" style="width: 100%">
+
+            <!-- 表格数据 -->
+            <el-table :data="currentTableData" style="width: 100%; margin-bottom: 20px;">
                 <el-table-column prop="arrowName" label="名称" />
                 <el-table-column prop="createUser" label="创建者" />
                 <el-table-column prop="createTime" label="创建日期" />
                 <el-table-column prop="updateTime" label="最近修改" />
                 <el-table-column prop="exist" label="是否启用" />
             </el-table>
+
+            <!-- 分页组件 -->
+            <el-pagination background layout="total, prev, pager, next" :total="total" :page-size="pageSize"
+                :current-page="currentPage" @current-change="handlePageChange"
+                style="text-align: right; margin-top: 10px;">
+            </el-pagination>
 
             <!-- Dialog 的 footer -->
             <template #footer>
@@ -24,9 +32,8 @@
 </template>
 
 <script setup>
-import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
+import { ref, getCurrentInstance, onMounted, computed } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
-import { defineProps } from 'vue'
 
 // 接收父组件传入的参数
 const props = defineProps({
@@ -50,7 +57,6 @@ const api = {
     getPageData: '/manageArrows/getPageData',
     addArrowsData: '/manageArrows/addArrowsData',
     updateArrowsData: '/manageArrows/updateArrowsData'
-
 }
 
 const expandButton = () => {
@@ -58,18 +64,32 @@ const expandButton = () => {
     getPageData()
 }
 
-const updateArrowsData = async () => {
+// 控制 Dialog 显示/隐藏
+const dialogVisible = ref(false)
 
+// 表格数据
+const tableData = ref([])
+
+// 分页参数
+const total = ref(0)          // 数据总条数
+const pageSize = ref(10)      // 每页显示的数据条数
+const currentPage = ref(1)    // 当前页
+
+// 获取当前页数据
+const getPageData = async () => {
     const result = await proxy.Request({
-        url: api.updateArrowsData,
+        url: api.getPageData,
         showLoading: true,
         params: {
-
+            pageNo: currentPage.value,
+            pageSize: pageSize.value
         }
     })
 
-    console.log('updateArrowsData ------> ', result);
-
+    console.log('page ------> ',result);
+    
+    tableData.value = result.data.list
+    total.value = result.data.totalCount
 }
 
 const addArrowsData = async () => {
@@ -83,25 +103,35 @@ const addArrowsData = async () => {
     console.log('addArrowsData ------> ', result);
 }
 
-// 控制 Dialog 显示/隐藏
-const dialogVisible = ref(false)
+const updateArrowsData = async () => {
 
-// 示例数据
-const tableData = ref([])
+const result = await proxy.Request({
+    url: api.updateArrowsData,
+    showLoading: true,
+    params: {
 
-const getPageData = async () => {
-    const result = await proxy.Request({
-        url: api.getPageData,
-        showLoading: true,
-    })
+    }
+})
 
-    console.log('result ------> ', result.data.list);
-    tableData.value = result.data.list
-    console.log('tableData ------> ', tableData.value);
+console.log('updateArrowsData ------> ', result);
 
 }
+
+// 监听页码变化
+const handlePageChange = (page) => {
+    currentPage.value = page
+    getPageData()
+}
+
+// 计算当前页展示的数据
+const currentTableData = computed(() => {
+    return tableData.value
+})
 </script>
 
 <style scoped>
-/* 可以在此添加自定义样式 */
+/* 增加分页与表格底部的间距，确保分页正常显示 */
+.el-pagination {
+    margin-top: 10px;
+}
 </style>
