@@ -12,7 +12,9 @@
             </div>
 
             <!-- 表格数据 -->
-            <el-table :data="filteredTableData" style="width: 100%; margin-bottom: 20px;">
+            <el-table :data="filteredTableData" fit style="width: 100%; margin-bottom: 20px;">
+                <el-table-column type="index" label="序号" />
+
                 <el-table-column prop="arrowName" label="名称" />
                 <el-table-column prop="createUser" label="创建者" />
                 <el-table-column prop="createTime" label="创建日期" sortable />
