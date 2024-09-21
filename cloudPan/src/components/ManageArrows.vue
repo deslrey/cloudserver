@@ -6,12 +6,13 @@
         <!-- 弹出的展示栏 (Dialog) -->
         <el-dialog title="箭头数据管理" v-model="dialogVisible" width="50%" :modal="true" :center="true" :lock-scroll="false"
             append-to-body>
+            <el-button type="primary" @click="addArrowsData">添加</el-button>
             <el-table :data="tableData" style="width: 100%">
                 <el-table-column prop="arrowName" label="名称" />
                 <el-table-column prop="createUser" label="创建者" />
                 <el-table-column prop="createTime" label="创建日期" />
                 <el-table-column prop="updateTime" label="最近修改" />
-                <el-table-column prop="exist" label="是否启用"/>
+                <el-table-column prop="exist" label="是否启用" />
             </el-table>
 
             <!-- Dialog 的 footer -->
@@ -47,6 +48,19 @@ const { proxy } = getCurrentInstance()
 
 const api = {
     getPageData: '/manageArrows/getPageData',
+    addArrowsData: '/manageArrows/addArrowsData',
+
+}
+
+const addArrowsData = async () => {
+
+    const result = await proxy.Request({
+        url: api.addArrowsData,
+        showLoading: true,
+        params: { arrowName: "钱" }
+    })
+
+    console.log('result ------> ', result);
 }
 
 // 控制 Dialog 显示/隐藏
