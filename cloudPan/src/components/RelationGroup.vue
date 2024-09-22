@@ -4,13 +4,12 @@
 
         <el-dialog title="组数据管理" v-model="dialogVisibleDialog" width="50%" :modal="true" :center="true"
             :lock-scroll="false" append-to-body>
-            <el-table :data="filterTableData" stripe size="large">
-                <el-table-column label="Name" prop="name" />
-                <el-table-column label="Description" prop="description" />
-                <el-table-column align="right">
-                    <template #header>
-                        <el-input v-model="search" size="small" placeholder="Type to search" />
-                    </template>
+            <el-table :data="filterTableData" fit stripe size="large" style="width: 100%; margin-bottom: 20px;">
+                <el-table-column type="index" label="序号" width="124vh" />
+                <el-table-column label="名称" prop="name" />
+                <el-table-column label="描述" prop="description" />
+                <el-table-column label="操作">
+
                     <template #default="scope">
                         <el-button size="small" type="primary" :icon="Edit" @click="handleEdit(scope.row)" />
                         <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(scope.row)" />
@@ -37,9 +36,9 @@
                 </el-form>
                 <template #footer>
                     <div class="dialog-footer">
-                        <el-button @click="dialogVisible = false">Cancel</el-button>
+                        <el-button @click="dialogVisible = false">取消</el-button>
                         <el-button type="primary" @click="submitEdit">
-                            Confirm
+                            确定
                         </el-button>
                     </div>
                 </template>
