@@ -16,7 +16,7 @@
                 <el-table-column type="index" label="序号" />
 
                 <el-table-column prop="arrowName" label="名称" />
-                <el-table-column prop="createUser" label="创建者" sortable/>
+                <el-table-column prop="createUser" label="创建者" sortable />
                 <el-table-column prop="createTime" label="创建日期" sortable />
                 <el-table-column prop="updateTime" label="最近修改" sortable>
                     <template #default="scope">
@@ -156,14 +156,11 @@ const filteredTableData = computed(() => {
 </script>
 
 <style scoped>
-.search-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+.search-container .el-input {
+    width: 200px;
 }
 
-.search-container .el-input {
-    width: 150px;
-    margin-right: 10px;
+.search-container .el-button {
+    margin-left: 10px;
 }
 </style>
