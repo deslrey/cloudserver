@@ -13,6 +13,7 @@
             <el-switch v-model="vagueSearch" class="mb-2"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="模糊查找"
                 inactive-text="精准查找" />
+            <RelationGroup />
             <ManageArrows />
         </div>
 
@@ -81,6 +82,7 @@ import { ref, getCurrentInstance, onMounted, onBeforeUnmount, nextTick, computed
 import * as echarts from 'echarts'
 
 import ManageArrows from "@/components/ManageArrows.vue";
+import RelationGroup from "@/components/RelationGroup.vue";
 
 const api = {
     getOptions: '/groups/getOptions',
