@@ -7,7 +7,7 @@
 
             <el-table :data="filterTableData" fit stripe size="large" style="width: 100%; margin-bottom: 20px;">
                 <el-table-column type="index" label="序号" width="124vh" />
-                <el-table-column label="名称" prop="name"sortable />
+                <el-table-column label="名称" prop="name" sortable />
                 <el-table-column label="描述" prop="description" />
                 <el-table-column label="操作">
                     <template #header>
@@ -26,6 +26,9 @@
                     layout="total, sizes, prev, pager, next, jumper" :total="tableData.totalCount"
                     @size-change="handleSizeChange" @current-change="handleCurrentChange" />
             </div>
+            <template #footer>
+                <el-button @click="dialogVisibleDialog = false">关闭</el-button>
+            </template>
 
             <el-dialog v-model="dialogVisible" title="编辑" width="500" destroy-on-close align-center
                 close-on-press-escape>
@@ -185,7 +188,6 @@ const submitEdit = async () => {
 
 <style scoped>
 .pagination-container {
-    position: fixed;
     bottom: 10px;
     right: 10px;
 }
