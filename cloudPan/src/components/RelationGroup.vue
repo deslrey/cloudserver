@@ -7,7 +7,7 @@
 
             <el-table :data="filterTableData" fit stripe size="large" style="width: 100%; margin-bottom: 20px;">
                 <el-table-column type="index" label="序号" width="124vh" />
-                <el-table-column label="名称" prop="name" />
+                <el-table-column label="名称" prop="name"sortable />
                 <el-table-column label="描述" prop="description" />
                 <el-table-column label="操作">
                     <template #header>
