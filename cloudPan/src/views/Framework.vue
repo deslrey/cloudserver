@@ -203,13 +203,7 @@ const menus = [
       },
     ],
   },
-  {
-    path: "/relationship/groups",
-    icon: "share1",
-    name: "组数据管理",
-    menuCode: "groups",
-    allShow: true,
-  },
+
   {
     path: "/relationship/relation",
     icon: "share1",
