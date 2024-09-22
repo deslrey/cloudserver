@@ -2,8 +2,8 @@
     <div>
         <el-button type="primary" @click="saveEdit">点我</el-button>
 
-        <el-dialog title="组数据管理" v-model="dialogVisibleDialog" width="50%" :modal="true" :center="true" :lock-scroll="false"
-            append-to-body>
+        <el-dialog title="组数据管理" v-model="dialogVisibleDialog" width="50%" :modal="true" :center="true"
+            :lock-scroll="false" append-to-body>
             <el-table :data="filterTableData" stripe size="large">
                 <el-table-column label="Name" prop="name" />
                 <el-table-column label="Description" prop="description" />
@@ -12,12 +12,8 @@
                         <el-input v-model="search" size="small" placeholder="Type to search" />
                     </template>
                     <template #default="scope">
-                        <el-button size="small" @click="handleEdit(scope.row)">
-                            Edit
-                        </el-button>
-                        <el-button size="small" type="danger" @click="handleDelete(scope.row)">
-                            Delete
-                        </el-button>
+                        <el-button size="small" type="primary" :icon="Edit" @click="handleEdit(scope.row)" />
+                        <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(scope.row)" />
                     </template>
                 </el-table-column>
             </el-table>
