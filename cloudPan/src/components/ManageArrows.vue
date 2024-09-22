@@ -134,26 +134,22 @@ const editRow = (row) => {
 }
 
 // 保存编辑后的数据
-const saveEdit = () => {
-
-    console.log('editForm ------> ', editForm);
-
-
-    // const saveEdit = async () => {
-    // const result = await proxy.Request({
-    //     url: api.updateArrowsData,
-    //     showLoading: true,
-    //     method: 'post',
-    //     params: {
-    //         id: editForm.value.id,
-    //         arrowName: editForm.value.arrowName
-    //     }
-    // })
-    // if (result) {
-    //     getPageData()  // 编辑成功后刷新表格数据
-    //     editDialogVisible.value = false  // 关闭编辑对话框
-    // }
+const saveEdit = async () => {
+    const result = await proxy.Request({
+        url: api.updateArrowsData,
+        showLoading: true,
+        params: {
+            id: editForm.value.id,
+            arrowName: editForm.value.arrowName,
+            exist: editForm.value.exist
+        }
+    })
+    if (result) {
+        getPageData()  // 编辑成功后刷新表格数据
+        editDialogVisible.value = false  // 关闭编辑对话框
+    }
 }
+
 
 // 进行删除操作
 const deleteRow = (row) => {
