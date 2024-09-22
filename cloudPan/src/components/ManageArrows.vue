@@ -180,7 +180,6 @@ const deleteRow = (row) => {
             proxy.Message.error(result.message)
         }
     )
-
 }
 
 const handlePageChange = (page) => {
@@ -206,4 +205,5 @@ const filteredTableData = computed(() => {
 .search-container .el-button {
     margin-left: 10px;
 }
+
 </style>

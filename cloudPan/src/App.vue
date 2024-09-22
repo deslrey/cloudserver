@@ -14,3 +14,9 @@ const config = reactive({
   max: 1,
 });
 </script>
+<style>
+body.el-popup-parent--hidden {
+  width: 100% !important;
+  /* 强制覆盖 Element Plus 设置 */
+}
+</style>
