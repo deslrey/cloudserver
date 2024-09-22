@@ -144,10 +144,14 @@ const saveEdit = async () => {
             exist: editForm.value.exist
         }
     })
-    if (result) {
+    console.log('result -----> ', result);
+
+    if (result.code === 200) {
+        proxy.Message.success(result.message)
         getPageData()  // 编辑成功后刷新表格数据
         editDialogVisible.value = false  // 关闭编辑对话框
     }
+    proxy.Message.error(result.message)
 }
 
 
@@ -169,7 +173,11 @@ const deleteRow = (row) => {
             if (!result) {
                 return
             }
-            getPageData()
+            if (result.code === 200) {
+                proxy.Message.success(result.message)
+                getPageData()
+            }
+            proxy.Message.error(result.message)
         }
     )
 
