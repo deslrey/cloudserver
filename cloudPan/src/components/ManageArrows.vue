@@ -16,14 +16,14 @@
                 <el-table-column type="index" label="序号" />
 
                 <el-table-column prop="arrowName" label="名称" />
-                <el-table-column prop="createUser" label="创建者" />
+                <el-table-column prop="createUser" label="创建者" sortable/>
                 <el-table-column prop="createTime" label="创建日期" sortable />
                 <el-table-column prop="updateTime" label="最近修改" sortable>
                     <template #default="scope">
                         <span>{{ scope.row.updateTime ? scope.row.updateTime : '暂无修改' }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="exist" label="是否启用">
+                <el-table-column prop="exist" label="是否启用" sortable>
                     <template #default="scope">
                         <span>{{ scope.row.exist ? '是' : '否' }}</span>
                     </template>
@@ -72,7 +72,8 @@ const { proxy } = getCurrentInstance()
 const api = {
     getPageData: '/manageArrows/getPageData',
     addArrowsData: '/manageArrows/addArrowsData',
-    updateArrowsData: '/manageArrows/updateArrowsData'
+    updateArrowsData: '/manageArrows/updateArrowsData',
+    deleteArrowsData: '/manageArrows/deleteArrowsData',
 }
 
 const expandButton = async () => {
@@ -109,14 +110,34 @@ const addArrowsData = async () => {
     console.log('addArrowsData ------> ', result);
 }
 
+// 编辑 row 数据
 const editRow = (row) => {
     console.log('Edit row:', row)
-    // 这里可以弹出编辑表单对话框，编辑 row 数据
+
 }
 
+// 进行删除操作
 const deleteRow = (row) => {
-    console.log('Delete row:', row)
-    // 这里可以弹出确认对话框，进行删除操作
+
+    proxy.Confirm(
+        `是否关闭当前箭头数据: 【${row.arrowName}】`,
+        async () => {
+            let result = await proxy.Request({
+                url: api.deleteArrowsData,
+                showLoading: true,
+                params: {
+                    id: row.id,
+                    arrowName: row.arrowName
+                }
+            })
+
+            if (!result) {
+                return
+            }
+            getPageData()
+        }
+    )
+
 }
 
 const handlePageChange = (page) => {
