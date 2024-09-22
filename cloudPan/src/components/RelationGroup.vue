@@ -4,12 +4,15 @@
 
         <el-dialog title="组数据管理" v-model="dialogVisibleDialog" width="50%" :modal="true" :center="true"
             :lock-scroll="false" append-to-body>
+
             <el-table :data="filterTableData" fit stripe size="large" style="width: 100%; margin-bottom: 20px;">
                 <el-table-column type="index" label="序号" width="124vh" />
                 <el-table-column label="名称" prop="name" />
                 <el-table-column label="描述" prop="description" />
                 <el-table-column label="操作">
-
+                    <template #header>
+                        <el-input v-model="search" size="small" placeholder="搜索名称" />
+                    </template>
                     <template #default="scope">
                         <el-button size="small" type="primary" :icon="Edit" @click="handleEdit(scope.row)" />
                         <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(scope.row)" />
