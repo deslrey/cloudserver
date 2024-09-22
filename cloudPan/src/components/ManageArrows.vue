@@ -45,6 +45,20 @@
                 <el-button @click="dialogVisible = false">关闭</el-button>
             </template>
         </el-dialog>
+
+
+        <!-- 编辑表单的对话框 -->
+        <el-dialog title="编辑箭头数据" v-model="editDialogVisible" width="30%" :lock-scroll="false">
+            <el-form :model="editForm">
+                <el-form-item label="箭头名称" :label-width="formLabelWidth">
+                    <el-input v-model="editForm.arrowName" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="editDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveEdit">保存</el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -82,11 +96,14 @@ const expandButton = async () => {
 }
 
 const dialogVisible = ref(false)
+const editDialogVisible = ref(false)  // 编辑对话框的显示状态
 const tableData = ref([])
 const total = ref(0)
 const pageSize = ref(10)
 const currentPage = ref(1)
 const searchQuery = ref('')
+const editForm = ref({})  // 保存当前编辑的数据
+const formLabelWidth = '120px'
 
 const getPageData = async () => {
     const result = await proxy.Request({
@@ -112,8 +129,30 @@ const addArrowsData = async () => {
 
 // 编辑 row 数据
 const editRow = (row) => {
-    console.log('Edit row:', row)
+    editForm.value = { ...row }  // 深拷贝当前行的数据
+    editDialogVisible.value = true  // 打开编辑对话框
+}
 
+// 保存编辑后的数据
+const saveEdit = () => {
+
+    console.log('editForm ------> ', editForm);
+
+
+    // const saveEdit = async () => {
+    // const result = await proxy.Request({
+    //     url: api.updateArrowsData,
+    //     showLoading: true,
+    //     method: 'post',
+    //     params: {
+    //         id: editForm.value.id,
+    //         arrowName: editForm.value.arrowName
+    //     }
+    // })
+    // if (result) {
+    //     getPageData()  // 编辑成功后刷新表格数据
+    //     editDialogVisible.value = false  // 关闭编辑对话框
+    // }
 }
 
 // 进行删除操作
