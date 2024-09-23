@@ -97,14 +97,14 @@ const tableDataList = async () => {
         pageNo: tableData.currentPage,
         pageSize: tableData.pageSize,
     }
-    console.log('tableData ------> ', tableData)
-    console.log('params ------> ', params)
+    // console.log('tableData ------> ', tableData)
+    // console.log('params ------> ', params)
     const result = await proxy.Request({
         url: api.getAllGroups,
         showLoading: true,
         params: params
     })
-    console.log('result ------> ', result)
+    // console.log('result ------> ', result)
     tableData.totalCount = result.data.totalCount
     tableData.currentPage = result.data.pageNo
     tableData.pageSize = result.data.pageSize
@@ -124,17 +124,17 @@ const filterTableData = computed(() =>
 )
 
 const handleEdit = (row) => {
-    console.log('row ------> ', row);
+    // console.log('row ------> ', row);
     editForm.id = row.id
     editForm.name = row.name
     editForm.description = row.description
     editForm.exist = row.exist
     dialogVisible.value = true
-    console.log('editForm ------> ', editForm);
+    // console.log('editForm ------> ', editForm);
 }
 
 const handleDelete = (row) => {
-    console.log('handleDelete ------> ', row.id)
+    // console.log('handleDelete ------> ', row.id)
     proxy.Confirm(
         `你确定要删除【${row.name}】这组关系数据吗?`,
         async () => {
@@ -156,17 +156,17 @@ const handleDelete = (row) => {
 const handleSizeChange = (val) => {
     tableData.pageSize = val
     tableDataList()
-    console.log(`${val} items per page`)
+    // console.log(`${val} items per page`)
 }
 
 const handleCurrentChange = (val) => {
     tableData.currentPage = val
     tableDataList()
-    console.log(`current page: ${val}`)
+    // console.log(`current page: ${val}`)
 }
 
 const submitEdit = async () => {
-    console.log('editForm ------> ', editForm);
+    // console.log('editForm ------> ', editForm);
 
     let result = await proxy.Request({
         url: api.updateGroup,
@@ -177,7 +177,7 @@ const submitEdit = async () => {
             description: editForm.description
         }
     })
-    console.log('result ------> ', result);
+    // console.log('result ------> ', result);
     if (result) {
         dialogVisible.value = false
         Message.success(result.message)
