@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-button type="primary" @click="saveEdit">点我</el-button>
+        <el-button type="primary" :icon="Edit" @click="saveEdit">组数据</el-button>
 
         <el-dialog title="组数据管理" v-model="dialogVisibleDialog" width="50%" :modal="true" :center="true"
             :lock-scroll="false" append-to-body>
