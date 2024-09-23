@@ -3,7 +3,7 @@
         <el-button :type="type" :icon="icon" @click="expandButton">{{ text }}</el-button>
 
         <el-dialog title="箭头数据管理" v-model="dialogVisible" width="50%" :modal="true" :center="true" :lock-scroll="false"
-            append-to-body>
+            append-to-body @update:modelValue="handleDialogClosed">
 
             <!-- 搜索框和按钮 -->
             <div class="search-container">
@@ -13,7 +13,7 @@
 
             <!-- 表格数据 -->
             <el-table :data="filteredTableData" fit style="width: 100%; margin-bottom: 10px;">
-                <el-table-column type="index" label="序号" width="124vh"/>
+                <el-table-column type="index" label="序号" width="124vh" />
                 <el-table-column prop="arrowName" label="名称" />
                 <el-table-column prop="createUser" label="创建者" sortable />
                 <el-table-column prop="createTime" label="创建日期" sortable />
@@ -41,7 +41,7 @@
                 style="text-align: right; margin-top: 10px;" />
 
             <template #footer>
-                <el-button @click="dialogVisible = false">关闭</el-button>
+                <el-button @click="closeDialog">关闭</el-button>
             </template>
         </el-dialog>
 
@@ -64,6 +64,9 @@
 <script setup>
 import { ref, getCurrentInstance, computed } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
+
+// 定义 emit
+const emit = defineEmits(['dialogClosed'])
 
 const props = defineProps({
     type: {
@@ -95,14 +98,22 @@ const expandButton = async () => {
 }
 
 const dialogVisible = ref(false)
-const editDialogVisible = ref(false)  // 编辑对话框的显示状态
+const editDialogVisible = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const pageSize = ref(10)
 const currentPage = ref(1)
 const searchQuery = ref('')
-const editForm = ref({})  // 保存当前编辑的数据
+const editForm = ref({})
 const formLabelWidth = '120px'
+
+// 监听 dialog 关闭
+const handleDialogClosed = (value) => {
+    if (!value) {
+        // console.log('对话框已关闭')
+        emit('dialogClosed') // 触发事件
+    }
+}
 
 const getPageData = async () => {
     const result = await proxy.Request({
@@ -126,13 +137,11 @@ const addArrowsData = async () => {
     console.log('addArrowsData ------> ', result);
 }
 
-// 编辑 row 数据
 const editRow = (row) => {
-    editForm.value = { ...row }  // 深拷贝当前行的数据
-    editDialogVisible.value = true  // 打开编辑对话框
+    editForm.value = { ...row }
+    editDialogVisible.value = true
 }
 
-// 保存编辑后的数据
 const saveEdit = async () => {
     const result = await proxy.Request({
         url: api.updateArrowsData,
@@ -147,16 +156,13 @@ const saveEdit = async () => {
 
     if (result.code === 200) {
         proxy.Message.success(result.message)
-        getPageData()  // 编辑成功后刷新表格数据
-        editDialogVisible.value = false  // 关闭编辑对话框
+        getPageData()
+        editDialogVisible.value = false
     }
     proxy.Message.error(result.message)
 }
 
-
-// 进行删除操作
 const deleteRow = (row) => {
-
     proxy.Confirm(
         `是否关闭当前箭头数据: 【${row.arrowName}】`,
         async () => {
@@ -184,6 +190,10 @@ const deleteRow = (row) => {
 const handlePageChange = (page) => {
     currentPage.value = page
     getPageData()
+}
+
+const closeDialog = () => {
+    dialogVisible.value = false
 }
 
 const filteredTableData = computed(() => {

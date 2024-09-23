@@ -14,7 +14,7 @@
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" active-text="模糊查找"
                 inactive-text="精准查找" />
             <RelationGroup />
-            <ManageArrows />
+            <ManageArrows @dialogClosed="getArrowsList" />
         </div>
 
         <div class="chart-container">
@@ -325,19 +325,19 @@ const getAllData = async (groupId) => {
 
 }
 
-const getArrowsList = async () => {
-    const result = await proxy.Request({
+const getArrowsList = () => {
+    const result = proxy.Request({
         url: api.getArrowsList,
-        showLoading: true,
+        // showLoading: true,
     })
 
     if (result.code === 200) {
         ArrowsList.value = result.data
     }
+    console.log('getArrowsList执行了');
 
-    console.log('ArrowsList ------> ', ArrowsList.value);
 
-
+    // console.log('ArrowsList ------> ', ArrowsList.value);
 }
 
 getArrowsList()
