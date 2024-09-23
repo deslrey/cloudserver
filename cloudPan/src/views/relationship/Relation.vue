@@ -325,7 +325,7 @@ const getAllData = async (groupId) => {
 
 }
 
-const getArrowsList = () => {
+const getArrowsList = async () => {
     const result = proxy.Request({
         url: api.getArrowsList,
         // showLoading: true,
@@ -334,13 +334,11 @@ const getArrowsList = () => {
     if (result.code === 200) {
         ArrowsList.value = result.data
     }
-    console.log('getArrowsList执行了');
+    // console.log('getArrowsList执行了');
 
 
     // console.log('ArrowsList ------> ', ArrowsList.value);
 }
-
-getArrowsList()
 
 // 公共处理函数
 const processGroupRelaData = async (groupId, isVagueSearch = true) => {
@@ -575,6 +573,7 @@ const updateChart = () => {
 }
 
 onMounted(() => {
+    getArrowsList()
     nextTick(() => {
         if (main.value) {
             myChart = echarts.init(main.value)
