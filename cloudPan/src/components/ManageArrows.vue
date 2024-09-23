@@ -2,13 +2,13 @@
     <div>
         <el-button :type="type" :icon="icon" @click="expandButton">{{ text }}</el-button>
 
-        <el-dialog title="箭头数据管理" v-model="dialogVisible" width="50%" :modal="true" :center="true" :lock-scroll="false"
+        <el-dialog title="箭头数据管理" v-model="dialogVisible" width="50%" :modal="true" center :lock-scroll="false"
             append-to-body @update:modelValue="handleDialogClosed">
 
             <!-- 搜索框和按钮 -->
             <div class="search-container">
                 <el-input v-model="searchQuery" placeholder="请输入名称搜索" clearable />
-                <el-button type="primary" @click="addArrowsData">添加</el-button>
+                <el-button type="primary" @click="addDataDialogVisible = true">添加</el-button>
             </div>
 
             <!-- 表格数据 -->
@@ -47,7 +47,7 @@
 
 
         <!-- 编辑表单的对话框 -->
-        <el-dialog title="编辑箭头数据" v-model="editDialogVisible" width="30%" :lock-scroll="false">
+        <el-dialog title="编辑箭头数据" v-model="editDialogVisible" width="30%" center :lock-scroll="false">
             <el-form :model="editForm">
                 <el-form-item label="箭头名称" :label-width="formLabelWidth">
                     <el-input v-model="editForm.arrowName" />
@@ -56,6 +56,20 @@
             <template #footer>
                 <el-button @click="editDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="saveEdit">保存</el-button>
+            </template>
+        </el-dialog>
+
+        <!-- 添加箭头数据对话框 -->
+        <el-dialog title="添加数据" v-model="addDataDialogVisible" width="30%" center :lock-scroll="false"
+            @update:modelValue="addDataDialogClosed">
+            <el-form :model="editForm">
+                <el-form-item label="箭头名称" :label-width="formLabelWidth">
+                    <el-input v-model="addDataArrowsName" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="addDataDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="addArrowsData">保存</el-button>
             </template>
         </el-dialog>
     </div>
@@ -99,11 +113,13 @@ const expandButton = async () => {
 
 const dialogVisible = ref(false)
 const editDialogVisible = ref(false)
+const addDataDialogVisible = ref(false)
 const tableData = ref([])
 const total = ref(0)
-const pageSize = ref(10)
+const pageSize = ref(8)
 const currentPage = ref(1)
 const searchQuery = ref('')
+const addDataArrowsName = ref('')
 const editForm = ref({})
 const formLabelWidth = '120px'
 
@@ -113,6 +129,9 @@ const handleDialogClosed = (value) => {
         // console.log('对话框已关闭')
         emit('dialogClosed') // 触发事件
     }
+}
+const addDataDialogClosed = () => {
+    addDataArrowsName.value = ''
 }
 
 const getPageData = async () => {
@@ -129,12 +148,24 @@ const getPageData = async () => {
 }
 
 const addArrowsData = async () => {
+
+    // addDataDialogVisible.value = true
+
+    if(addDataArrowsName.value === ''){
+        proxy.Message.warning('添加的数据不能为空,请重新输入')
+        return
+    }
+
     const result = await proxy.Request({
         url: api.addArrowsData,
         showLoading: true,
-        params: { arrowName: "钱" }
+        params: { arrowName: addDataArrowsName.value }
     })
-    console.log('addArrowsData ------> ', result);
+    // 清除添加的数据
+    addDataArrowsName.value = ''
+    addDataDialogVisible.value = false
+    // 添加完成重新获取数据
+    getPageData()
 }
 
 const editRow = (row) => {
