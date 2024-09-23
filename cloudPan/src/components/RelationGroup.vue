@@ -109,7 +109,7 @@ const tableDataList = async () => {
     tableData.currentPage = result.data.pageNo
     tableData.pageSize = result.data.pageSize
     tableData.list = result.data.list
-    console.log(tableData)
+    // console.log(tableData)
 }
 
 // 页面加载时请求数据

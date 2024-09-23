@@ -89,6 +89,7 @@ const api = {
     getGroupRela: '/relationships/getGroupRela',
     getAllData: '/groupMembers/getAllData',
     updateNodeData: '/relationships/updateNodeData',
+    getArrowsList: '/manageArrows/getArrowsList'
 }
 const { proxy } = getCurrentInstance();
 const main = ref(null)
@@ -98,6 +99,7 @@ const idCard = ref('')
 const options = ref([])
 const graphData = ref([])
 const linksData = ref([])
+const ArrowsList = ref([])
 const noData = ref(true)
 const vagueSearch = ref(false)
 
@@ -323,6 +325,22 @@ const getAllData = async (groupId) => {
 
 }
 
+const getArrowsList = async () => {
+    const result = await proxy.Request({
+        url: api.getArrowsList,
+        showLoading: true,
+    })
+
+    if (result.code === 200) {
+        ArrowsList.value = result.data
+    }
+
+    console.log('ArrowsList ------> ', ArrowsList.value);
+
+
+}
+
+getArrowsList()
 
 // 公共处理函数
 const processGroupRelaData = async (groupId, isVagueSearch = true) => {
@@ -412,7 +430,7 @@ const processGroupRelaData = async (groupId, isVagueSearch = true) => {
             target: endNodeId,
             name: item.information,
             des: item.information,
-            symbol: item.information.includes('好友') ? ['none', 'arrow'] : ['none', 'none'],
+            symbol: ArrowsList.value.some(arrow => item.information.includes(arrow)) ? ['none', 'arrow'] : ['none', 'none'],
             lineStyle: {
                 color: highlightArrow ? nodeColor : '#4b565b'
             }
