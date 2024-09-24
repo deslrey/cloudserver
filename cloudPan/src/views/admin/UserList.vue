@@ -167,7 +167,7 @@ const updateUserStatus = (row) => {
 
       if (result.code === 200) {
         proxy.Message.success(`${result.message}`)
-      }else{
+      } else {
         proxy.Message.warning(`${result.message}`)
       }
 
@@ -220,7 +220,10 @@ const submitForm = () => {
       return;
     }
     dialogConfig.value.show = false;
-    proxy.Message.success("操作成功");
+    if (result.code !== 200) {
+      proxy.Message.warning(`${result.message}`);
+    }
+    proxy.Message.success(`${result.message}`);
     loadDataList();
   });
 };
