@@ -168,6 +168,11 @@ const handleCurrentChange = (val) => {
 const submitEdit = async () => {
     // console.log('editForm ------> ', editForm);
 
+    if (editForm.name === '') {
+        Message.warning('名称不能为空,请重新输入')
+        return
+    }
+
     let result = await proxy.Request({
         url: api.updateGroup,
         method: 'post',
