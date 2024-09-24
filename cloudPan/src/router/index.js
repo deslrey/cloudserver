@@ -45,15 +45,6 @@ const router = createRouter({
           component: () => import("@/views/relationship/Relation.vue")
         },
         {
-          path: '/relationship/groups',
-          name: '组数据',
-          meta: {
-            needLogin: true,
-            menuCode: "groups"
-          },
-          component: () => import("@/views/relationship/RelationGroup.vue")
-        },
-        {
           path: '/settings/sysSetting',
           name: '系统设置',
           meta: {
