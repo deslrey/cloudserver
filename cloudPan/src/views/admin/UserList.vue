@@ -164,6 +164,13 @@ const updateUserStatus = (row) => {
       if (!result) {
         return;
       }
+
+      if (result.code === 200) {
+        proxy.Message.success(`${result.message}`)
+      }else{
+        proxy.Message.warning(`${result.message}`)
+      }
+
       loadDataList();
     }
   );
