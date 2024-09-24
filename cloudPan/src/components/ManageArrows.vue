@@ -151,7 +151,7 @@ const addArrowsData = async () => {
 
     // addDataDialogVisible.value = true
 
-    if(addDataArrowsName.value === ''){
+    if (addDataArrowsName.value === '') {
         proxy.Message.warning('添加的数据不能为空,请重新输入')
         return
     }
@@ -161,6 +161,12 @@ const addArrowsData = async () => {
         showLoading: true,
         params: { arrowName: addDataArrowsName.value }
     })
+
+    if (result.code === 200) {
+        proxy.Message.success(`${result.message}`)
+    } else {
+        proxy.Message.error(`${result.message}`)
+    }
     // 清除添加的数据
     addDataArrowsName.value = ''
     addDataDialogVisible.value = false
@@ -174,6 +180,10 @@ const editRow = (row) => {
 }
 
 const saveEdit = async () => {
+    if (editForm.value.arrowName === '') {
+        proxy.Message.warning('名称不能为空,请重新输入')
+        return
+    }
     const result = await proxy.Request({
         url: api.updateArrowsData,
         showLoading: true,
